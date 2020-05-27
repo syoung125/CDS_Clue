@@ -5,6 +5,8 @@ public class test {
 		System.out.println("pull 성공!gywlsㅎㅎ");
 		System.out.println("pull 성공!승연ㅎㅎ");
 		System.out.println("pull 성공!서영ㅎㅎ");
+		System.out.println("pull 성공!효진ㅎㅎ");
+
 	}
 
 }
