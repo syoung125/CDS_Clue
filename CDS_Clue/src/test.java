@@ -4,6 +4,7 @@ public class test {
 		// TODO Auto-generated method stub
 		System.out.println("pull gywls");
 		System.out.println("pull 뜽연");
+		System.out.println("pull 뜽연2");
 	}
 
 }
