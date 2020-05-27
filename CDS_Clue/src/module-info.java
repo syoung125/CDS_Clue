@@ -1,2 +1,0 @@
-module CDS_Clue {
-}
