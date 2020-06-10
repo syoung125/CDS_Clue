@@ -77,7 +77,7 @@ public class test extends JFrame {
 		pRight.add(pInput, BorderLayout.SOUTH);
 		
 		
-		setVisible(true); // print frame
+		setVisible(true); // 프레임 출력
 	}
 
 	public static void main(String[] args) {
