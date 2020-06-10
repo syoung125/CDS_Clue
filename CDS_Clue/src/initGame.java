@@ -36,7 +36,8 @@ public class initGame {
 					i--;
 				}
 			}
-		}
+		}	
+
 	}
 
 	// 정답카드 생성

@@ -6,6 +6,7 @@ import kr.ac.konkuk.ccslab.cm.stub.CMServerStub;
 
 
 public class ClueCMServer {
+	
 	private CMServerStub m_serverStub;
 	private ClueCMServerEventHandler m_eventHandler;
 
