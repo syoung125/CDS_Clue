@@ -13,9 +13,16 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JTextField;
 
+import kr.ac.konkuk.ccslab.cm.entity.CMGroup;
+import kr.ac.konkuk.ccslab.cm.entity.CMGroupInfo;
+import kr.ac.konkuk.ccslab.cm.entity.CMMember;
+import kr.ac.konkuk.ccslab.cm.entity.CMSession;
 import kr.ac.konkuk.ccslab.cm.entity.CMSessionInfo;
+import kr.ac.konkuk.ccslab.cm.entity.CMUser;
 import kr.ac.konkuk.ccslab.cm.event.CMDummyEvent;
 import kr.ac.konkuk.ccslab.cm.event.CMSessionEvent;
+import kr.ac.konkuk.ccslab.cm.info.CMInfo;
+import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 
 
@@ -37,10 +44,12 @@ public class Intro2 extends JFrame {
 	private JButton session6Btn;
 	private BtnListener login2btnlistener;
 
-	public Intro2() {
-		m_clientStub=new CMClientStub();
-		m_eventHandler=new Intro2EventHandler();
+	public Intro2(CMClientStub clientStub) {
+		//m_clientStub=new CMClientStub();
+		m_clientStub=clientStub;
+		m_eventHandler=new Intro2EventHandler(this);
 		m_bRun = true;
+		
 		makeLogin2();
 	}
 	public CMClientStub getM_clientStub() {
@@ -101,8 +110,14 @@ public void makeLogin2() {
 			}
 			else if(button.getText().toString().charAt(1)=='인')
 			{
-				System.out.println(button.getText().toString().charAt(0));
+				int sessionnum=button.getText().toString().charAt(0)-'0';
+				System.out.println("session"+Integer.toString(sessionnum-2));
+				String sessiontojoin="session"+Integer.toString(sessionnum-2);
 				//그 세션에 활성화된 그룹들을 불러와서 임의로 배정.
+				//아무래도 그룹 지정은 m_clientStub.changeGroup(strGroupName);
+				getM_clientStub().leaveSession("SERVER");
+				getM_clientStub().joinSession(sessiontojoin);
+				test frame = new test();
 
 			}
 		}
@@ -114,7 +129,9 @@ public void makeLogin2() {
 		System.out.println("fastStart");
 		//현재 활성화된 세션을 조사 (세션 별로 활성화된 그룹 수 띄우기)
 		getM_clientStub().requestSessionInfo();
+		
 		//세션과 그룹에 등록 후
+		
 		test frame = new test();
 
 	}
@@ -132,7 +149,9 @@ public void makeLogin2() {
         login2btnlistener=new BtnListener();
 
         getM_clientStub().requestServerInfo();
-		session3Btn=new JButton("3인");
+        //세션에 접속한 인원 알아내기
+        //CMMember groupMembers = m_clientStub.getGroupMembers();
+		session3Btn=new JButton("3인"	);
         session3Btn.setPreferredSize(new Dimension(100,100));
         session3Btn.addActionListener(login2btnlistener);
         session4Btn=new JButton("4인");
@@ -154,7 +173,8 @@ public void makeLogin2() {
         setVisible(true);
 	}
 	public void showRanking() {
-		
+		getGroupInfoInSession("session1");
+
 		System.out.println("showRanking");
 	    //랭킹 조회 페이지 생성 
 		//디비에서 유저 정보 가져오기
@@ -184,15 +204,64 @@ public void makeLogin2() {
 		
 	}
 	
+	public void checkSessionInfo() {
+		//전체 세션의 속한 사람 수 조회
+		CMSessionEvent se = null;
+		System.out.println("<<<<<<<<checkSessionInfo>>>>>>>");
+		se = getM_clientStub().syncRequestSessionInfo();
+
+		Iterator<CMSessionInfo> iter = se.getSessionInfoList().iterator();
+
+		System.out.println(String.format("%-60s%n", "------------------------------------------------------------"));
+		System.out.println(String.format("%-20s%-20s%-10s%-10s%n", "name", "address", "port", "user num"));
+		System.out.println(String.format("%-60s%n", "------------------------------------------------------------"));
+
+		while(iter.hasNext())
+		{
+			CMSessionInfo tInfo = iter.next();
+			System.out.println(String.format("%-20s%-20s%-10d%-10d%n", tInfo.getSessionName(), tInfo.getAddress(), 
+					tInfo.getPort(), tInfo.getUserNum()));
+		}
+	
+		System.out.println("======");	
+	}
+        
+	public void joinSession(String sessionName) {
+		//인원 별 세션에 들어갑니다
+		boolean bRequestResult = false;
+        
+		System.out.println("join session["+sessionName+"]");
+		bRequestResult = getM_clientStub().joinSession(sessionName);
+        
+        if(bRequestResult) 
+        	System.out.print("successfully sent the session-join request.\n");
+        else 
+        	System.out.print("failed to sent the session-join request.\n");
+        
+	}
+	public void getGroupInfoInSession(String sessionName) {
+		//각 세션의 정보 얻기 > 그룹별 사람 수
+		CMInteractionInfo interInfo=getM_clientStub().getCMInfo().getInteractionInfo();
+		CMMember groupMembers=getM_clientStub().getGroupMembers();
+		CMSession session=interInfo.findSession(sessionName);
+		Iterator<CMGroup> iter=session.getGroupList().iterator();
+		while(iter.hasNext()) {
+			CMGroup group=iter.next();
+			System.out.println("세션["+sessionName+"] 내 그룹"+group.getGroupUsers().getMemberNum());
+		}
+		
+	}
+	/*
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Intro2 frame = new Intro2();
+		CMClientStub s=new CMClientStub();
+		Intro2 frame = new Intro2(s);
 		frame.getM_clientStub().setAppEventHandler(frame.getM_eventHandler());
 		frame.getM_clientStub().startCM();
 		
 		frame.getM_clientStub().loginCM("testID", "test");
+		frame.getM_clientStub().startCM();
 		
-	
-	}
-
+	}*/
+    
 }

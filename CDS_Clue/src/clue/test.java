@@ -18,7 +18,6 @@ public class test extends JFrame {
 	public test() {
 		setTitle("CLUE");
 		setSize(800,600);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
 		
 		Container contentPane = getContentPane(); 
