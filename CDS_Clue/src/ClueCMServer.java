@@ -43,33 +43,33 @@ public class ClueCMServer {
 		System.out.println("detected server address: "+strCurServerAddress);
 		System.out.println("saved server port: "+nSavedServerPort);
 		
-		try {
-			System.out.print("new server address (enter for detected value): ");
-			strNewServerAddress = br.readLine().trim();
-			if(strNewServerAddress.isEmpty()) strNewServerAddress = strCurServerAddress;
-
-			System.out.print("new server port (enter for saved value): ");
-			strNewServerPort = br.readLine().trim();
-			try {
-				if(strNewServerPort.isEmpty()) 
-					nNewServerPort = nSavedServerPort;
-				else
-					nNewServerPort = Integer.parseInt(strNewServerPort);				
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-				return;
-			}
-			
-			// update the server info if the user would like to do
-			if(!strNewServerAddress.equals(strSavedServerAddress))
-				m_serverStub.setServerAddress(strNewServerAddress);
-			if(nNewServerPort != nSavedServerPort)
-				m_serverStub.setServerPort(Integer.parseInt(strNewServerPort));
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			System.out.print("new server address (enter for detected value): ");
+//			strNewServerAddress = br.readLine().trim();
+//			if(strNewServerAddress.isEmpty()) strNewServerAddress = strCurServerAddress;
+//
+//			System.out.print("new server port (enter for saved value): ");
+//			strNewServerPort = br.readLine().trim();
+//			try {
+//				if(strNewServerPort.isEmpty()) 
+//					nNewServerPort = nSavedServerPort;
+//				else
+//					nNewServerPort = Integer.parseInt(strNewServerPort);				
+//			} catch (NumberFormatException e) {
+//				e.printStackTrace();
+//				return;
+//			}
+//			
+//			// update the server info if the user would like to do
+//			if(!strNewServerAddress.equals(strSavedServerAddress))
+//				m_serverStub.setServerAddress(strNewServerAddress);
+//			if(nNewServerPort != nSavedServerPort)
+//				m_serverStub.setServerPort(Integer.parseInt(strNewServerPort));
+//			
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	
 		boolean bRet = m_serverStub.startCM(); //CMDBMANAGER init
 		if(!bRet)
