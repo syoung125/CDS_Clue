@@ -25,6 +25,7 @@ import kr.ac.konkuk.ccslab.cm.info.CMInfo;
 import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 import kr.ac.konkuk.ccslab.cm.util.CMUtil;
+import sun.applet.Main;
 public class ClueCMClient extends JFrame {
    
    private static final int WARNING_MESSAGE = 0;
@@ -41,7 +42,7 @@ public class ClueCMClient extends JFrame {
    private JButton session4Btn;
    private JButton session5Btn;
    private JButton session6Btn;
-   private ImageIcon icon;
+   private Image icon;
    
    private BtnListener login2btnlistener;
    private ArrayList groupnum=null;
@@ -66,18 +67,11 @@ public class ClueCMClient extends JFrame {
    
    public void makeLogin2() {
 
-	   icon=new ImageIcon("C:\\Users\\tarah\\Desktop\\CLUE.jpg");
-	   JPanel background=new JPanel() {
-		   public void paintComponent(Graphics g) {
-			   g.drawImage(icon.getImage(),0,0,null);
-			   setOpaque(false);
-			   super.paintComponent(g);
-		   }
-	   };
+	  //icon=new ImageIcon(Main.class.getResource("/CDS_Clue/img/clue.jpg")).getImage();
 	   
 	   setTitle("게임 준비");
-      setSize(600,300);
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       setSize(600,300);
+       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new FlowLayout(FlowLayout.CENTER,40,50));
       
         login2btnlistener=new BtnListener();
@@ -97,7 +91,9 @@ public class ClueCMClient extends JFrame {
         
         setVisible(true);
 
+       
    }
+  
    public class BtnListener implements ActionListener{
 
       @Override
