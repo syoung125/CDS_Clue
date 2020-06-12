@@ -190,7 +190,7 @@ public class ClueCMClient extends JFrame {
 	    	}
 	    	
 		    Object[] message= {
-		    		"현재 바로 시작할 수 있는 게임 방이 없습니다.\n대기할 방을 입력하세요(인원 수 입력)",
+		    		"현재 바로 시작할 수 있는 게임 방이 없습니다.    \n대기할 방을 입력하세요(인원 수 입력)",
 		    		"3인 방: "+messagestr.charAt(0)+"명 대기 중","4인 방: "+messagestr.charAt(1)+"명 대기 중",
 		    		"5인 방: "+messagestr.charAt(2)+"명 대기 중","6인 방: "+messagestr.charAt(3)+"명 대기 중"
 		    };
