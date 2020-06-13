@@ -46,16 +46,23 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 		case CMSessionEvent.LOGIN:
 			// System.out.println("["+se.getUserName()+"] requests login.");
 			printMessage("[" + se.getUserName() + "] requests login.\n");
-			if (confInfo.isLoginScheme()) {
+			if(confInfo.isLoginScheme())
+			{
 				// user authentication...
 				// CM DB must be used in the following authentication..
-				boolean ret = ClueCMDBManager.authenticateUser(se.getUserName(), se.getPassword(),
+				String strQuery = "select * from user_table where userName='"+se.getUserName()
+						+"' and password=PASSWORD('"+se.getPassword()+"');";
+				System.out.println(strQuery);
+				boolean ret = CMDBManager.authenticateUser(se.getUserName(), se.getPassword(), 
 						m_serverStub.getCMInfo());
-				if (!ret) {
-					printMessage("[" + se.getUserName() + "] authentication fails!\n");
+				if(!ret)
+				{
+					printMessage("["+se.getUserName()+"] authentication fails!\n");
 					m_serverStub.replyEvent(cme, 0);
-				} else {
-					printMessage("[" + se.getUserName() + "] authentication succeeded.\n");
+				}
+				else
+				{
+					printMessage("["+se.getUserName()+"] authentication succeeded.\n");
 					m_serverStub.replyEvent(cme, 1);
 				}
 			}
@@ -120,7 +127,7 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 		CMDummyEvent due = (CMDummyEvent) cme;
 		System.out.println("session(" + due.getHandlerSession() + "), group(" + due.getHandlerGroup() + ")");
 		String msg = due.getDummyInfo();
-		System.out.println("total message from sender: " + msg); // 클라이언트로부터 수신한 CMDummyEvent의 내용 출력
+		System.out.println("total message from sender: " + msg); // �겢�씪�씠�뼵�듃濡쒕��꽣 �닔�떊�븳 CMDummyEvent�쓽 �궡�슜 異쒕젰
 		String[] arrMsg = msg.split("#");
 		String type = arrMsg[0];
 		switch (type) {
@@ -136,22 +143,22 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 		Boolean ret = false;
 		CMDummyEvent due= new CMDummyEvent();
 		
-		ret = ClueCMDBManager.queryAlreadyUser(strName,m_serverStub.getCMInfo()) == -1 ? true : false; //-1: 기존 아이디에 없음, 1;기존 id에 있음
+		ret = ClueCMDBManager.queryAlreadyUser(strName,m_serverStub.getCMInfo()) == -1 ? true : false; //-1: 湲곗〈 �븘�씠�뵒�뿉 �뾾�쓬, 1;湲곗〈 id�뿉 �엳�쓬
 		if(ret) {
 			String str = ClueCMDBManager.queryInsertUser(strName,strEncPasswd,m_serverStub.getCMInfo()) == -1 ? "false" : "true";
 			due.setDummyInfo("reply#registerUser#"+str);
 		}
 		else {
-			//해당 아이디 존재
+			//�빐�떦 �븘�씠�뵒 議댁옱
 			due.setDummyInfo("reply#registerUser#false");
 			
 		}
 		
 		
-		//해겷해야하는 문제 -> login group 에 들어가있지 않으면 unicast가 안됨 ! 시도해본 해결 방법: login 실패하는 것처럼 일단 user에 넣고, send 하고 빼는 방법 
+		//�빐寃룻빐�빞�븯�뒗 臾몄젣 -> login group �뿉 �뱾�뼱媛��엳吏� �븡�쑝硫� unicast媛� �븞�맖 ! �떆�룄�빐蹂� �빐寃� 諛⑸쾿: login �떎�뙣�븯�뒗 寃껋쿂�읆 �씪�떒 user�뿉 �꽔怨�, send �븯怨� 鍮쇰뒗 諛⑸쾿 
 		
 		m_serverStub.send(due,sender); 
-		System.out.println("send message: "+due.getDummyInfo()); //클라이언트로 전송한 CMDummyEvent의 내용 출력
+		System.out.println("send message: "+due.getDummyInfo()); //�겢�씪�씠�뼵�듃濡� �쟾�넚�븳 CMDummyEvent�쓽 �궡�슜 異쒕젰
 		System.out.println("======\n");
 	}
 
