@@ -66,20 +66,30 @@ public class ClueCMClient extends JFrame {
 	  //icon=new ImageIcon(Main.class.getResource("/CDS_Clue/img/clue.jpg")).getImage();
 	   
 	    setTitle("게임 준비");
-        setSize(600,300);
+        setSize(500, 740);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new FlowLayout(FlowLayout.CENTER,40,50));
+        setLayout(new FlowLayout());
       
         login2btnlistener=new BtnListener();
         fastStartBtn=new JButton("빠른 시작");
-        fastStartBtn.setPreferredSize(new Dimension(150,100));
+        fastStartBtn.setPreferredSize(new Dimension(150,60));
         fastStartBtn.addActionListener(login2btnlistener);
         makeRoomBtn=new JButton("방 만들기");
-        makeRoomBtn.setPreferredSize(new Dimension(150,100));
+        makeRoomBtn.setPreferredSize(new Dimension(150,60));
         makeRoomBtn.addActionListener(login2btnlistener);
         showRankingBtn=new JButton("랭킹 조회");
-        showRankingBtn.setPreferredSize(new Dimension(150,100));
+        showRankingBtn.setPreferredSize(new Dimension(150,60));
         showRankingBtn.addActionListener(login2btnlistener);
+
+		ImageIcon icon = new ImageIcon("img/CLUE.jpg"); //이미지 아이콘 객체 생성
+		Image im = icon.getImage(); //뽑아온 이미지 객체 사이즈를 새롭게 만들기!
+
+		Image im2 = im.getScaledInstance(500, 600, Image.SCALE_DEFAULT);
+
+		ImageIcon icon2 = new ImageIcon(im2);
+
+		JLabel img = new JLabel(icon2);
+		add(img);
 
         add(fastStartBtn);
         add(makeRoomBtn);
