@@ -3,7 +3,6 @@ import kr.ac.konkuk.ccslab.cm.event.CMEvent;
 import kr.ac.konkuk.ccslab.cm.event.handler.CMAppEventHandler;
 import kr.ac.konkuk.ccslab.cm.info.CMInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
-import org.json.*;
 public class ClueCMClientGameEventHandler implements CMAppEventHandler {
 	
 	private ClueCMClientGame m_client;
@@ -11,8 +10,13 @@ public class ClueCMClientGameEventHandler implements CMAppEventHandler {
 	
 	// Dummy info type
 	public class DummyType { 
-		public static final String GameStart = "GameStart";
-	
+		public static final String GameStart = "initGameInfo";
+		public static final String SetTurn = "SetTurn";
+		public static final String Reasoning = "Reasoning";
+		public static final String ReasoningAnswer = "ReasoningAnswer";
+		public static final String CastGroup = "CastGroup";
+		public static final String Target = "Target";
+		public static final String TargetReturn = "TargetReturn";
 	}
 	
 	public ClueCMClientGameEventHandler(CMClientStub clientStub, ClueCMClientGame client)
@@ -62,22 +66,43 @@ public class ClueCMClientGameEventHandler implements CMAppEventHandler {
 	private void processDummyEvent(CMEvent cme)
 	{
 		CMDummyEvent due = (CMDummyEvent) cme;
-//		printMessage("session("+due.getHandlerSession()+"), group("+due.getHandlerGroup()+")\n");
-//		printMessage("dummy msg: "+due.getDummyInfo()+"\n");
-		//parse해서 (type#msg) 이런식으로 전송
-		if(due.getDummyInfo() == DummyType.GameStart) {
-			// 서버에서 받은 것일 때 (할수있나)(왜냐면 채팅에서 GameStart칠수도있으니까)
-			// msg parse -> 인자로 게임초기화 정보 보냄
-//			m_client.setGameStart();
+		String msg = due.getDummyInfo();
+		System.out.println("total message from sender: " + msg);
+		String[] arrMsg = msg.split("#");
+		String type = arrMsg[0];
+		switch(type) {
+			case DummyType.GameStart:
+				String answer[] = arrMsg[1].split(",");
+				String myCard[] = arrMsg[2].split(",");
+				String nextTurn = arrMsg[3];
+				String currentTurn = arrMsg[4];
+				String openCard[] = null;
+				if(!arrMsg[5].equals("NULL")) {
+					openCard = arrMsg[5].split(",");
+				}
+				String playerTurn[] = arrMsg[6].split(",");
+				m_client.env.initEnv(answer, myCard, nextTurn, currentTurn, openCard, playerTurn);
+				m_client.startGame();
+				break;
+			case DummyType.SetTurn:
+				m_client.setCurrentTurn(arrMsg[1]);
+				break;
+			case DummyType.Reasoning:
+				m_client.checkReason(msg);
+				break;
+			case DummyType.ReasoningAnswer:
+				m_client.receiveReason(msg); // 증명함
+				break;
+			case DummyType.CastGroup:
+				m_client.printMessage(arrMsg[1]);
+				break;
+			case DummyType.Target:
+				m_client.cardQ_targetReturn(arrMsg[2], arrMsg[1]);
+				break;
+			case DummyType.TargetReturn:
+				
+				break;
 		}
-		return;
-	}
-	
-	///////////////////////////////////////////////////////////
-	
-	private void printMessage(String strText)
-	{
-		m_client.printMessage(strText);
 		return;
 	}
 	

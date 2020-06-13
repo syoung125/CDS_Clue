@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import javax.swing.*;
 import javax.swing.text.*;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+//import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 import kr.ac.konkuk.ccslab.cm.entity.CMGroup;
 import kr.ac.konkuk.ccslab.cm.entity.CMGroupInfo;
@@ -25,7 +25,7 @@ import kr.ac.konkuk.ccslab.cm.info.CMInfo;
 import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 import kr.ac.konkuk.ccslab.cm.util.CMUtil;
-import sun.applet.Main;
+//import sun.applet.Main;
 public class ClueCMClient extends JFrame {
    
    private static final int WARNING_MESSAGE = 0;
@@ -43,12 +43,15 @@ public class ClueCMClient extends JFrame {
    private BtnListener login2btnlistener;
    private ArrayList groupnum=null;
    
+   ClueCMClientGame play;
+   
    public ClueCMClient(){
       m_clientStub = new CMClientStub();
+      
       m_eventHandler = new ClueCMClientEventHandler(m_clientStub,this);
       m_bRun = true;
       
-      testStartCM();
+//      testStartCM();
 
    }
    public CMClientStub getClientStub()
@@ -62,24 +65,34 @@ public class ClueCMClient extends JFrame {
    }
    
    public void makeLogin2() {
-
-	  //icon=new ImageIcon(Main.class.getResource("/CDS_Clue/img/clue.jpg")).getImage();
-	   
-	    setTitle("게임 준비");
-        setSize(600,300);
+        //UI변경 변경
+       setTitle("게임 준비");
+        setSize(500, 730);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new FlowLayout(FlowLayout.CENTER,40,50));
+        setLayout(new FlowLayout(FlowLayout.CENTER));
       
         login2btnlistener=new BtnListener();
         fastStartBtn=new JButton("빠른 시작");
-        fastStartBtn.setPreferredSize(new Dimension(150,100));
+        fastStartBtn.setPreferredSize(new Dimension(150,60));
         fastStartBtn.addActionListener(login2btnlistener);
         makeRoomBtn=new JButton("방 만들기");
-        makeRoomBtn.setPreferredSize(new Dimension(150,100));
+        makeRoomBtn.setPreferredSize(new Dimension(150,60));
         makeRoomBtn.addActionListener(login2btnlistener);
         showRankingBtn=new JButton("랭킹 조회");
-        showRankingBtn.setPreferredSize(new Dimension(150,100));
+        showRankingBtn.setPreferredSize(new Dimension(150,60));
         showRankingBtn.addActionListener(login2btnlistener);
+
+        fastStartBtn.setBackground(Color.WHITE);
+        makeRoomBtn.setBackground(Color.WHITE);
+        showRankingBtn.setBackground(Color.WHITE);
+      
+      ImageIcon icon = new ImageIcon("img/CLUE.jpg"); //이미지 아이콘 객체 생성
+      Image im = icon.getImage(); //뽑아온 이미지 객체 사이즈를 새롭게 만들기!
+      Image im2 = im.getScaledInstance(500, 600, Image.SCALE_DEFAULT);
+      ImageIcon icon2 = new ImageIcon(im2);
+
+      JLabel img = new JLabel(icon2);
+      add(img);
 
         add(fastStartBtn);
         add(makeRoomBtn);
@@ -88,7 +101,7 @@ public class ClueCMClient extends JFrame {
     
         setVisible(true);
         
-       
+      
    }
   
    public class BtnListener implements ActionListener{
@@ -134,10 +147,16 @@ public class ClueCMClient extends JFrame {
          System.out.println("sessionNum:"+sessionNum);
          if(session.getUserNum()==sessionNum-1) {           //여석 1. 나 추가 시 게임 바로 시작
             m_clientStub.syncJoinSession(session.getSessionName());
-            m_clientStub.changeGroup("g1");					//**g1으로 로그인 
-              
-            ClueCMClientGame play=new ClueCMClientGame();
-			return;
+            m_clientStub.changeGroup("g1");               //**g1으로 로그인 
+            
+            CMDummyEvent due = new CMDummyEvent();
+            System.out.println(m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress());
+            String host = m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress();
+            due.setDummyInfo("startGame#"+session.getSessionName()+"#g1");
+            m_clientStub.send(due, "SERVER"); //notify the sever to start the game
+//            ClueCMClientGame play=new ClueCMClientGame();
+            play.showDialog();
+         return;
          }
          else if(session.getUserNum()==0){
             temp=session.getSessionName();
@@ -179,31 +198,25 @@ public class ClueCMClient extends JFrame {
           if(ret==null)
              return;
           int sessionNum=Integer.parseInt(ret)-2;
-          System.out.println("요거밝혀라"+sessionNum);
           if(1<=sessionNum&&sessionNum<5) {
              m_clientStub.joinSession("session"+sessionNum);
              m_clientStub.changeGroup("g1");
-             m_clientStub.requestSessionInfo();
             //대기
            // int alert=JOptionPane.showConfirmDialog(null, m_clientStub.getGroupMembers().toString()+"와 대기합니다.", "대기 중", JOptionPane.OK_OPTION);
             //*************비활성화 시켜주세욤*************
-            ClueCMClientGame play=new ClueCMClientGame();
+             play.showDialog();
              return;
           }
       
       return;      
 
    }
-   public void startGame() {
-       ClueCMClientGame play=new ClueCMClientGame();
-   }
+
    public void makeRoom() {
          
       String strSessionName = null;
       String sessiontojoin=null;
       CMSessionEvent bRequestResult = null;
-      m_clientStub.requestServerInfo();
-      System.out.println("server info: "+m_clientStub.getServerAddress());
       System.out.println("<<<<<게임 인원 선택>>>>>");
       strSessionName = JOptionPane.showInputDialog("게임 인원을 입력하세요(3-6):");
       if(strSessionName != null)
@@ -232,19 +245,10 @@ public class ClueCMClient extends JFrame {
          else
             System.out.print("failed the session-join request!\n");
       }
-      //확인용
-      m_clientStub.requestSessionInfo();
-      /*
-      getGroupInfoInSession(sessiontojoin);
-      String strGroupName = JOptionPane.showInputDialog(sessiontojoin+"의 그룹 별 현재 인원\n g1:"+groupnum.get(0).toString()+" g2:"+groupnum.get(1).toString()+" g3:"+groupnum.get(2).toString()+" g4:"+groupnum.get(3));
-      groupnum.clear();
-      if(strGroupName != null) {
-         m_clientStub.changeGroup(strGroupName);
-         testPrintGroupMembers();
-      }*/
+   
       m_clientStub.changeGroup("g1");     //*****g1으로 시작
-      //getSessionGroupInfo();
-      ClueCMClientGame play=new ClueCMClientGame();
+//      ClueCMClientGame play=new ClueCMClientGame();
+      play.showDialog();
    }
 
    public void getGroupInfoInSession(String sessionName) {
@@ -297,39 +301,51 @@ public class ClueCMClient extends JFrame {
   
    public void showRanking() {
       //getGroupInfoInSession("session1");
+     //System.out.println("url: "+m_clientStub.getCMInfo().getDBInfo().getDBURL());
 
       System.out.println("showRanking");
-       //랭킹 조회 페이지 생성 
+      //랭킹 조회 페이지 생성 
       //디비에서 유저 정보 가져오기
       //순서대로 나열하기(쿼리로)
       JFrame rankingFrame =new JFrame();
       rankingFrame.setTitle("랭킹 조회");
-      rankingFrame.setSize(600,800);
+      rankingFrame.setSize(500,730);
       rankingFrame.setLayout(new BorderLayout());
       
       JTextField rankingText=new JTextField("RANKING");
+      rankingText.setFont(new Font("Calibri", Font.BOLD, 25));
+      rankingText.setFocusable(false);
       rankingText.setHorizontalAlignment(JTextField.CENTER);
-      System.out.println("url"+m_clientStub.getCMInfo().getDBInfo().getDBURL());
+      
       ClueCMDBManager cluedbmanager=new ClueCMDBManager();
       
-      ArrayList<String> ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
-      JList listPane=null;
-      if(ret!=null) {
-         listPane=new JList();
-        listPane.setAlignmentX(CENTER_ALIGNMENT);;
-      }
-     
+      //ArrayList<String> ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
+      String[] list= {"1.ddeung                                    0.7","2.dding                                       0.2","3.ddong                                      0.1"};
+      JList listPane=new JList(list);
+      listPane.setFont(new Font("Calibri", Font.BOLD, 20));
+      listPane.setAlignmentX(CENTER_ALIGNMENT);
+      listPane.setBackground(Color.DARK_GRAY);
+      listPane.setForeground(Color.white);
+      
+      JPanel panel=new JPanel();
+      panel.setAlignmentX(CENTER_ALIGNMENT);
+      panel.setSize(500,200);
+      panel.setBackground(Color.DARK_GRAY);
+      panel.add(listPane);
 
-      TextArea text=new TextArea(10,2);
+      //      if(ret!=null) {
+//         listPane=new JList(list);
+//        listPane.setAlignmentX(CENTER_ALIGNMENT);;
+//      }
+//     
+
+      //TextArea text=new TextArea(10,2);
          
       rankingFrame.add(rankingText,BorderLayout.NORTH);
-      rankingFrame.add(listPane,BorderLayout.CENTER);
-      rankingFrame.add(text);
+      rankingFrame.add(panel,BorderLayout.CENTER);
+      //rankingFrame.add(text);
       rankingFrame.setVisible(true);
-//      
-        
-      
-      
+
       
    }
    public void testStartCM()
@@ -385,8 +401,8 @@ public class ClueCMClient extends JFrame {
          initUser(false);
       }
       //로그인에 성공한 이후니까, 방선택하기 코드가 들어갈 자리입니다.
-      
-      startTest();
+      play = new ClueCMClientGame(m_clientStub);
+//      startTest();
    }
    
       
@@ -466,7 +482,7 @@ public class ClueCMClient extends JFrame {
           5. select로 확인
             select *from user_table;
          */
-	      System.out.println("안녕하세요:::"+m_clientStub.getCMInfo().getDBInfo().getDBURL());
+         System.out.println("안녕하세요:::"+m_clientStub.getCMInfo().getDBInfo().getDBURL());
 
       
       boolean bRequestResult = false;
@@ -513,7 +529,7 @@ public class ClueCMClient extends JFrame {
          else {
             //m_clientStub.registerUser(strUserName, strPassword); //이미 존재하는 아이디라면 CMInteractionManager에서 걸러줌! -> 이거 server event thread 에서 캐치하는데 default로 처리해주는 함수랑 우리 db구조랑 안맞아서 dummyevent로 재정의함
             m_clientStub.registerUser(strUserName, strPassword);
-        	//bRequestResult = registerUser(strUserName, strPassword);
+           //bRequestResult = registerUser(strUserName, strPassword);
 //            if(bRequestResult)
 //            {
 //               Object[] message2 = {"please wait until register your info...."};
@@ -564,6 +580,7 @@ public class ClueCMClient extends JFrame {
       CMClientStub cmStub = client.getClientStub();
       cmStub.setAppEventHandler(client.getClientEventHandler());
       //cmStub.loginCM("user1", "1234");
+      client.testStartCM();
       System.out.println("Client application is terminated.");
    }
 

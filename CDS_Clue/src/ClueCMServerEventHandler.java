@@ -148,7 +148,7 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 			due.setDummyInfo("reply#registerUser#"+str);
 		}
 		else {
-			//�빐�떦 �븘�씠�뵒 議댁옱
+			//해당 아이디 존재
 			due.setDummyInfo("reply#registerUser#false");
 			
 		}

@@ -7,7 +7,7 @@ import kr.ac.konkuk.ccslab.cm.manager.CMDBManager;
 
 public class ClueCMDBManager extends CMDBManager {
 
-	// CMDBManager init�� cm.manager> CMInteractionManager �궡遺��뿉�꽌 �븿
+	// CMDBManager init은 cm.manager> CMInteractionManager 내부에서 함
 
 	public ArrayList<String> queryGetUsersList(CMInfo cmInfo)
 	{
