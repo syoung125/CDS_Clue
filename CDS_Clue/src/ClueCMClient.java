@@ -62,7 +62,7 @@ public class ClueCMClient extends JFrame {
    }
    
    public void makeLogin2() {
-        //UI변경
+        //UI변경 변경
 	    setTitle("게임 준비");
         setSize(500, 740);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
