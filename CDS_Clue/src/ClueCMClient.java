@@ -64,9 +64,9 @@ public class ClueCMClient extends JFrame {
    public void makeLogin2() {
         //UI변경 변경
 	    setTitle("게임 준비");
-        setSize(500, 740);
+        setSize(500, 730);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(FlowLayout.CENTER));
       
         login2btnlistener=new BtnListener();
         fastStartBtn=new JButton("빠른 시작");
@@ -293,7 +293,7 @@ public class ClueCMClient extends JFrame {
   
    public void showRanking() {
       //getGroupInfoInSession("session1");
-	  System.out.println("url: "+m_clientStub.getCMInfo().getDBInfo().getDBURL());
+	  //System.out.println("url: "+m_clientStub.getCMInfo().getDBInfo().getDBURL());
 
       System.out.println("showRanking");
       //랭킹 조회 페이지 생성 
@@ -301,26 +301,41 @@ public class ClueCMClient extends JFrame {
       //순서대로 나열하기(쿼리로)
       JFrame rankingFrame =new JFrame();
       rankingFrame.setTitle("랭킹 조회");
-      rankingFrame.setSize(600,800);
+      rankingFrame.setSize(500,730);
       rankingFrame.setLayout(new BorderLayout());
       
       JTextField rankingText=new JTextField("RANKING");
+      rankingText.setFont(new Font("Calibri", Font.BOLD, 25));
+      rankingText.setFocusable(false);
       rankingText.setHorizontalAlignment(JTextField.CENTER);
+      
       ClueCMDBManager cluedbmanager=new ClueCMDBManager();
       
-      ArrayList<String> ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
-      JList listPane=null;
-      if(ret!=null) {
-         listPane=new JList();
-        listPane.setAlignmentX(CENTER_ALIGNMENT);;
-      }
-     
+      //ArrayList<String> ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
+      String[] list= {"1.ddeung                                    0.7","2.dding                                       0.2","3.ddong                                      0.1"};
+      JList listPane=new JList(list);
+      listPane.setFont(new Font("Calibri", Font.BOLD, 17));
+      listPane.setAlignmentX(CENTER_ALIGNMENT);
+      listPane.setBackground(Color.DARK_GRAY);
+      listPane.setForeground(Color.white);
+      
+      JPanel panel=new JPanel();
+      panel.setAlignmentX(CENTER_ALIGNMENT);
+      panel.setSize(500,200);
+      panel.setBackground(Color.DARK_GRAY);
+      panel.add(listPane);
 
-      TextArea text=new TextArea(10,2);
+      //      if(ret!=null) {
+//         listPane=new JList(list);
+//        listPane.setAlignmentX(CENTER_ALIGNMENT);;
+//      }
+//     
+
+      //TextArea text=new TextArea(10,2);
          
       rankingFrame.add(rankingText,BorderLayout.NORTH);
-      rankingFrame.add(listPane,BorderLayout.CENTER);
-      rankingFrame.add(text);
+      rankingFrame.add(panel,BorderLayout.CENTER);
+      //rankingFrame.add(text);
       rankingFrame.setVisible(true);
 //      
         
