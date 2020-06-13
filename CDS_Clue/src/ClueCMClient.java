@@ -62,9 +62,7 @@ public class ClueCMClient extends JFrame {
    }
    
    public void makeLogin2() {
-
-	  //icon=new ImageIcon(Main.class.getResource("/CDS_Clue/img/clue.jpg")).getImage();
-	   
+        //UI변경
 	    setTitle("게임 준비");
         setSize(500, 740);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,9 +81,7 @@ public class ClueCMClient extends JFrame {
 
 		ImageIcon icon = new ImageIcon("img/CLUE.jpg"); //이미지 아이콘 객체 생성
 		Image im = icon.getImage(); //뽑아온 이미지 객체 사이즈를 새롭게 만들기!
-
 		Image im2 = im.getScaledInstance(500, 600, Image.SCALE_DEFAULT);
-
 		ImageIcon icon2 = new ImageIcon(im2);
 
 		JLabel img = new JLabel(icon2);
@@ -98,7 +94,7 @@ public class ClueCMClient extends JFrame {
     
         setVisible(true);
         
-       
+      
    }
   
    public class BtnListener implements ActionListener{
