@@ -16,6 +16,7 @@ import kr.ac.konkuk.ccslab.cm.stub.CMServerStub;
 public class ClueCMServerEventHandler implements CMAppEventHandler {
 	private CMServerStub m_serverStub;
 	private ClueCMServer m_server;
+	private ClueCMClientGame clueCMClientGame;
 
 	public ClueCMServerEventHandler(CMServerStub serverStub, ClueCMServer server) {
 		m_serverStub = serverStub;

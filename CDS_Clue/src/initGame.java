@@ -2,6 +2,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
+
+import javax.sound.midi.Synthesizer;
+
 import java.lang.String;
 
 import kr.ac.konkuk.ccslab.cm.*;
@@ -39,7 +42,8 @@ public class initGame {
 		Random random = new Random();
 		CMGroup cmG=se.findGroup(group);
 		
-		Vector<CMUser> pVector=cmG.getGroupUsers().getAllMembers();
+		Vector<CMUser> pVector = new Vector<CMUser>();
+		pVector.addAll(cmG.getGroupUsers().getAllMembers());
 		int pNum=cmG.getGroupUsers().getMemberNum();
 		System.out.println(pVector.size());
 		playerTurn=new String[pNum];
@@ -96,22 +100,23 @@ public class initGame {
 	// 게임을 하는 클라이언트에게 정답과 자기 카드 다음사람과 오픈할 카드가 있을 경우 오픈할 카드 보내줌
 	public void registerCard(String session, String group,CMServerStub cs) {
 		
+		System.out.println("registerCard");
 		CMServerStub m_serverStub = cs;
 		CMInteractionInfo interInfo = m_serverStub.getCMInfo().getInteractionInfo();
 		
 		CMSession se=interInfo.findSession(session);
 		CMGroup cmG=se.findGroup(group);
 		
+		
 		//게임을 하는 사람들 수
 		int gnum=cmG.getGroupUsers().getMemberNum();
-				
 		StringBuilder sb=new StringBuilder("initGameInfo#");
 		sb.append(card[character]);
 		sb.append(",");
 		sb.append(card[weapon]);
 		sb.append(",");
 		sb.append(card[place]);
-
+		System.out.println(sb.toString());
 		int cNum = 18 - (gnum*3); // 공개할 카드의 수
 		
 		CMDummyEvent due=new CMDummyEvent();
@@ -122,38 +127,39 @@ public class initGame {
 			turn.append(playerTurn[i]);
 		}
 		String sTurn=turn.toString();
-		sTurn=sTurn.substring(0,sTurn.length()-1);
 		
-		for(int i=0;i<gnum;i++) {			
+		for(int i=0;i<gnum;i++) {		
+			System.out.println("333");
 			String str=card[playerCard[3*i]]+","+card[playerCard[3*i+1]]
 					+","+card[playerCard[3*i+2]];//사용자에게 분배되는 카드
+			System.out.println(str);
+			int nextidx = i+1;
+			if(nextidx == gnum) nextidx = 0;
 			
 			if(gnum==6) {//6명일 경우 오픈할 카드가 없음
-				if(i==gnum-1) {
-					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[0]+"#"+
-							playerTurn[0]+"#"+"NULL"+"#"+sTurn);
-				}else {
-					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
-							playerTurn[0]+"#"+"NULL"+"#"+sTurn);
-				}
+				due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[nextidx]+"#"+
+						playerTurn[0]+"#"+"NULL"+"#"+sTurn);
+				
 			}
 			else {
+				System.out.println("444");
 				StringBuilder open=new StringBuilder("#");
-				for(int j=0;j<cNum;j++) {
-					open.append(playerCard[gnum*3+j]+",");
+				open.append(card[playerCard[gnum*3]]);
+				for(int j=1;j<cNum;j++) {
+					System.out.println("5");
+					open.append(","+card[playerCard[gnum*3+j]]);
+					
 				}
-				if(i==gnum-1) {
-					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
-							playerTurn[0]+open+"#"+sTurn);
-				}else {
-					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
-							playerTurn[0]+open+"#"+sTurn);
-				}
+				System.out.println(open.toString());
+				
+				due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[nextidx]+"#"+
+						playerTurn[0]+open+"#"+sTurn);
+				System.out.println((i+1)%gnum);
 			}
 			m_serverStub.send(due, playerTurn[i]);
-			
+			System.out.println(due.getDummyInfo());
 		}
-	
+		
 	}
 	
 	

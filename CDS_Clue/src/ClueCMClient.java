@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import javax.swing.*;
 import javax.swing.text.*;
 
-//import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 import kr.ac.konkuk.ccslab.cm.entity.CMGroup;
 import kr.ac.konkuk.ccslab.cm.entity.CMGroupInfo;
@@ -25,7 +25,7 @@ import kr.ac.konkuk.ccslab.cm.info.CMInfo;
 import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 import kr.ac.konkuk.ccslab.cm.util.CMUtil;
-//import sun.applet.Main;
+import sun.applet.Main;
 public class ClueCMClient extends JFrame {
    
    private static final int WARNING_MESSAGE = 0;
@@ -43,8 +43,11 @@ public class ClueCMClient extends JFrame {
    private BtnListener login2btnlistener;
    private ArrayList groupnum=null;
    
+   ClueCMClientGame play;
+   
    public ClueCMClient(){
       m_clientStub = new CMClientStub();
+      play = new ClueCMClientGame(m_clientStub);
       m_eventHandler = new ClueCMClientEventHandler(m_clientStub,this);
       m_bRun = true;
       
@@ -151,7 +154,8 @@ public class ClueCMClient extends JFrame {
             String host = m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress();
             due.setDummyInfo("startGame#"+session.getSessionName()+"#g1");
             m_clientStub.send(due, "SERVER"); //notify the sever to start the game
-            ClueCMClientGame play=new ClueCMClientGame();
+//            ClueCMClientGame play=new ClueCMClientGame();
+            play.showDialog();
 			return;
          }
          else if(session.getUserNum()==0){
@@ -200,16 +204,14 @@ public class ClueCMClient extends JFrame {
             //대기
            // int alert=JOptionPane.showConfirmDialog(null, m_clientStub.getGroupMembers().toString()+"와 대기합니다.", "대기 중", JOptionPane.OK_OPTION);
             //*************비활성화 시켜주세욤*************
-            ClueCMClientGame play=new ClueCMClientGame();
+             play.showDialog();
              return;
           }
       
       return;      
 
    }
-   public void startGame() {
-       ClueCMClientGame play=new ClueCMClientGame();
-   }
+
    public void makeRoom() {
          
       String strSessionName = null;
@@ -245,7 +247,8 @@ public class ClueCMClient extends JFrame {
       }
    
       m_clientStub.changeGroup("g1");     //*****g1으로 시작
-      ClueCMClientGame play=new ClueCMClientGame();
+//      ClueCMClientGame play=new ClueCMClientGame();
+      play.showDialog();
    }
 
    public void getGroupInfoInSession(String sessionName) {

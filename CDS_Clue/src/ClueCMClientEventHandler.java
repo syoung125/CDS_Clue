@@ -14,9 +14,24 @@ import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 public class ClueCMClientEventHandler implements CMAppEventHandler {
 	private CMClientStub m_clientStub;
 	private ClueCMClient m_client;
+//	private ClueCMClientGame m_game;
+	
+	
+	// Dummy info type
+	public class DummyType { 
+	  public static final String GameStart = "initGameInfo";
+	  public static final String SetTurn = "SetTurn";
+	  public static final String Reasoning = "Reasoning";
+	  public static final String ReasoningAnswer = "ReasoningAnswer";
+	  public static final String CastGroup = "CastGroup";
+	  public static final String Target = "Target";
+	  public static final String TargetReturn = "TargetReturn";
+	}
+
 	public ClueCMClientEventHandler(CMClientStub stub, ClueCMClient client) {
 		m_client = client;
 		m_clientStub = stub;
+//		m_game = game;
 	}
 
 	@Override
@@ -47,6 +62,38 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 				printMessage(arrMsg[1]+" result: "+arrMsg[2]);
 				processReplyEvent(arrMsg[1]);
 				break;
+			case DummyType.GameStart:
+				m_client.play.printMessage(msg);
+//	            String answer[] = arrMsg[1].split(",");
+//	            String myCard[] = arrMsg[2].split(",");
+//	            String nextTurn = arrMsg[3];
+//	            String currentTurn = arrMsg[4];
+//	            String openCard[] = null;
+//	            if(!arrMsg[5].equals("NULL")) {
+//	               openCard = arrMsg[5].split(",");
+//	            }
+//	            String playerTurn[] = arrMsg[6].split(",");
+//	            m_game.env.initEnv(answer, myCard, nextTurn, currentTurn, openCard, playerTurn);
+//	            m_game.startGame();
+	            break;
+	         case DummyType.SetTurn:
+	        	 m_client.play.setCurrentTurn(arrMsg[1]);
+	            break;
+	         case DummyType.Reasoning:
+	        	 m_client.play.checkReason(msg);
+	            break;
+	         case DummyType.ReasoningAnswer:
+	        	 m_client.play.receiveReason(msg); // 증명함
+	            break;
+	         case DummyType.CastGroup:
+	        	 m_client.play.printMessage(arrMsg[1]);
+	            break;
+	         case DummyType.Target:
+	        	 m_client.play.cardQ_targetReturn(arrMsg[2], arrMsg[1]);
+	            break;
+	         case DummyType.TargetReturn:
+	        	 m_client.play.setDisable(m_client.play.findBtn(arrMsg[1]));
+	            break;
 		}
 		return;
 	}
@@ -55,6 +102,7 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 			case "registerUser":
 				m_client.initUser(true);
 				break;
+
 		}
 	}
 	private void processSessionEvent(CMEvent cme) {
