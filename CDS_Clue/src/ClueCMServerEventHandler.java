@@ -133,9 +133,21 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 			case "registerUser":
 				registerUser(arrMsg[3],arrMsg[1],arrMsg[2]);
 				break;
+			case "startGame":
+				startGame(arrMsg[1],arrMsg[2],m_serverStub);
+				break;
+
 		}
 		
 		return;
+	}
+	private void startGame(String session,String group,CMServerStub cs) {
+		initGame initGame = new initGame();
+		initGame.answerCard();
+		initGame.distributeCard();
+		System.out.println(session+group);
+		initGame.playersTurn(session,group,cs);
+		initGame.registerCard(session,group,cs);
 	}
 	
 	private void registerUser(String sender,String strName, String strEncPasswd) {

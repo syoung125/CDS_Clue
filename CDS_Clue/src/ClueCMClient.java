@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import javax.swing.*;
 import javax.swing.text.*;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+//import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 import kr.ac.konkuk.ccslab.cm.entity.CMGroup;
 import kr.ac.konkuk.ccslab.cm.entity.CMGroupInfo;
@@ -25,7 +25,7 @@ import kr.ac.konkuk.ccslab.cm.info.CMInfo;
 import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 import kr.ac.konkuk.ccslab.cm.util.CMUtil;
-import sun.applet.Main;
+//import sun.applet.Main;
 public class ClueCMClient extends JFrame {
    
    private static final int WARNING_MESSAGE = 0;
@@ -145,7 +145,12 @@ public class ClueCMClient extends JFrame {
          if(session.getUserNum()==sessionNum-1) {           //여석 1. 나 추가 시 게임 바로 시작
             m_clientStub.syncJoinSession(session.getSessionName());
             m_clientStub.changeGroup("g1");					//**g1으로 로그인 
-              
+            
+            CMDummyEvent due = new CMDummyEvent();
+            System.out.println(m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress());
+            String host = m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress();
+            due.setDummyInfo("startGame#"+session.getSessionName()+"#g1");
+            m_clientStub.send(due, "SERVER"); //notify the sever to start the game
             ClueCMClientGame play=new ClueCMClientGame();
 			return;
          }

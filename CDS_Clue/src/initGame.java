@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
 import java.lang.String;
@@ -5,42 +7,54 @@ import java.lang.String;
 import kr.ac.konkuk.ccslab.cm.*;
 import kr.ac.konkuk.ccslab.cm.stub.*;
 import kr.ac.konkuk.ccslab.cm.entity.*;
+import kr.ac.konkuk.ccslab.cm.event.CMDummyEvent;
+import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
+
 
 public class initGame {
 
-	public static String card[] = {"JAMES", "JIN", "YUMI", "DEER", "WOONG", "BOBBY", "KNIFE", "PIPE", "ROPE", "GUN", "HAMMER", "WRENCH",
+	private static String card[] = {"JAMES", "JIN", "YUMI", "DEER", "WOONG", "BOBBY", "KNIFE", "PIPE", "ROPE", "GUN", "HAMMER", "WRENCH",
 			"GARAGE", "BATHROOM", "KITCHEN", "YARD", "LIVINGROOM", "BALCONY", "DININGROOM", "BEDROOM", "LIBRARY"};
 	
-	public static int character; // card[0] ~ card[5] (cbr)
-	public static int weapon; // card[6] ~ card[11] (cbr)
-	public static int place; // card[12] ~ card[20] (cbr)
-	public static int playerCard[] = new int[18]; // ÇÃ·¹ÀÌ¾îµéÀÇ Ä«µå°¡ ÀúÀåµÈ ¹è¿­ (cbr)
+	private static int character; // card[0] ~ card[5] (cbr)
+	private static int weapon; // card[6] ~ card[11] (cbr)
+	private static int place; // card[12] ~ card[20] (cbr)
 	
-	public static String playerTurn[]; // ÇÃ·¹ÀÌ¾îµéÀÇ ¼ø¼­°¡ ÀúÀåµÈ ¹è¿­ (cbv)
+	private static int playerCard[] = new int[18]; // í”Œë ˆì´ì–´ë“¤ì˜ ì¹´ë“œê°€ ì €ì¥ëœ ë°°ì—´ (cbr)
 	
-	// ÇÃ·¹ÀÌ¾îµéÀÇ ¼ø¼­¸¦ ÁöÁ¤
-	private void playerTurn() {
+	private static String playerTurn[]; // í”Œë ˆì´ì–´ë“¤ì˜ ìˆœì„œê°€ ì €ì¥ëœ ë°°ì—´ (cbv)
+	
+	CMUser cmUser=new CMUser();
+	
+	
+	// í”Œë ˆì´ì–´ë“¤ì˜ ìˆœì„œë¥¼ ì§€ì •
+	public void playersTurn(String session, String group,CMServerStub cs) {
 		
-		CMMember cmMember = new CMMember();
+		CMServerStub m_serverStub = cs;
+		CMInteractionInfo interInfo = m_serverStub.getCMInfo().getInteractionInfo();
+		
+		CMSession se=interInfo.findSession(session);
+		
+	//	CMMember cmMember = new CMMember();
 		Random random = new Random();
+		CMGroup cmG=se.findGroup(group);
 		
-		int pNum = cmMember.getMemberNum(); /* CM method »ç¿ë */
-		Vector<CMUser> pVector = cmMember.getAllMembers(); /* CM method »ç¿ë */
-				
-		// ÇÃ·¹ÀÌ¾î ¼ö ¸¸Å­ÀÇ ¼ıÀÚ ·£´ı ³ª¿­
-		int arr[] = new int[pNum];
-		for(int i=0; i<pNum; i++) {
-			arr[i] = random.nextInt(pNum);
-			for(int j=0; j<i; j++) {
-				if(arr[i]==arr[j]) {
-					i--;
-				}
-			}
-		}
+		Vector<CMUser> pVector=cmG.getGroupUsers().getAllMembers();
+		int pNum=cmG.getGroupUsers().getMemberNum();
+		System.out.println(pVector.size());
+		playerTurn=new String[pNum];
+		for(int i=0; i<pNum; i++) {//í´ë¼ì´ì–¸íŠ¸ë§ˆë‹¤ ìˆœì„œë¶€ì—¬ 
+			int ran=random.nextInt(pVector.size());
+			String str=pVector.get(ran).getName();
+			System.out.println(str);
+			playerTurn[i] =str;
+			pVector.remove(ran);
+		}	
+		
 	}
 
-	// Á¤´äÄ«µå »ı¼º
-	private void answerCard() {
+	// ì •ë‹µì¹´ë“œ ìƒì„±
+	public void answerCard() {
 		
 		Random random = new Random();
 		character = random.nextInt(6);
@@ -49,12 +63,12 @@ public class initGame {
 
 	}
 	
-	// Á¤´ä Ä«µå Á¦¿Ü ºĞ¹è
-	private void distributeCard() {
+	 // ì •ë‹µ ì¹´ë“œ ì œì™¸ ë¶„ë°°
+	public void distributeCard() {
 		
 		Random random = new Random();
 		
-		// 21°³ÀÇ Ä«µå¸¦ ³ª¿­
+		// 21ê°œì˜ ì¹´ë“œë¥¼ ë‚˜ì—´
 		int arr[] = new int[21];
 		for(int i=0; i<21; i++) {
 			arr[i] = random.nextInt(21);
@@ -65,7 +79,7 @@ public class initGame {
 			}
 		}
 
-		// Á¤´ä Ä«µå¸¦ Á¦¿ÜÇÑ 18°³ÀÇ Ä«µå¸¦ ºĞ¹è
+		// ì •ë‹µ ì¹´ë“œë¥¼ ì œì™¸í•œ 18ê°œì˜ ì¹´ë“œë¥¼ ë¶„ë°°
 		int k = 0;
 		
 		for(int i=0; i<21; i++) {
@@ -75,28 +89,76 @@ public class initGame {
 				k++;
 			}
 		}
+
 	}
 	
-	// Ä«µå ºĞ¹è ÈÄ °ø°³ÇÒ Ä«µå
-	private void openCard() {
+	
+	// ê²Œì„ì„ í•˜ëŠ” í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì •ë‹µê³¼ ìê¸° ì¹´ë“œ ë‹¤ìŒì‚¬ëŒê³¼ ì˜¤í”ˆí•  ì¹´ë“œê°€ ìˆì„ ê²½ìš° ì˜¤í”ˆí•  ì¹´ë“œ ë³´ë‚´ì¤Œ
+	public void registerCard(String session, String group,CMServerStub cs) {
 		
-		CMMember cmMember = new CMMember();
-		int pNum = cmMember.getMemberNum(); /* CM method »ç¿ë */
-		int cNum = 18 - (pNum*3); // °ø°³ÇÒ Ä«µåÀÇ ¼ö
-		int[] openCard = new int[cNum]; // °ø°³ÇÒ Ä«µåÀÇ ¹è¿­ (cbr)
+		CMServerStub m_serverStub = cs;
+		CMInteractionInfo interInfo = m_serverStub.getCMInfo().getInteractionInfo();
 		
-		for(int i =0; i<cNum; i++) {
-			openCard[i] = playerCard[pNum*3 + i];
-		}		
+		CMSession se=interInfo.findSession(session);
+		CMGroup cmG=se.findGroup(group);
+		
+		//ê²Œì„ì„ í•˜ëŠ” ì‚¬ëŒë“¤ ìˆ˜
+		int gnum=cmG.getGroupUsers().getMemberNum();
+				
+		StringBuilder sb=new StringBuilder("initGameInfo#");
+		sb.append(card[character]);
+		sb.append(",");
+		sb.append(card[weapon]);
+		sb.append(",");
+		sb.append(card[place]);
+
+		int cNum = 18 - (gnum*3); // ê³µê°œí•  ì¹´ë“œì˜ ìˆ˜
+		
+		CMDummyEvent due=new CMDummyEvent();
+		//ì‚¬ìš©ìì—ê²Œ ì¹´ë“œë¥¼ ë¶„ë°°í•˜ê³  ì •ë‹µì¹´ë“œì™€ ë³¸ì¸ ë‹¤ìŒ ì‚¬ëŒê³¼ ì²˜ìŒ ì‹œì‘í•˜ëŠ” ì‚¬ëŒ 6ëª… ë¯¸ë§Œì¼ ê²½ìš° ì˜¤í”ˆí•  ì¹´ë“œë¥¼ ë³´ëƒ„
+		//initGameInfo#ë²”ì¸,ì‚´ì¸ë„êµ¬,ì¥ì†Œ#ë³¸ì¸ì¹´ë“œ1,ë³¸ì¸ì¹´ë“œ2,ë³¸ì¸ì¹´ë“œ3#ë‹¤ìŒì‚¬ëŒ#ì²˜ìŒì‹œì‘í•˜ëŠ”ì‚¬ëŒ#ì˜¤í”ˆí• ì¹´ë“œ ì—†ìœ¼ë©´ NULL
+		StringBuilder turn =new StringBuilder();
+		for(int i=0;i<gnum;i++) {
+			turn.append(playerTurn[i]);
+		}
+		
+		for(int i=0;i<gnum;i++) {			
+			String str=card[playerCard[3*i]]+","+card[playerCard[3*i+1]]
+					+","+card[playerCard[3*i+2]];//ì‚¬ìš©ìì—ê²Œ ë¶„ë°°ë˜ëŠ” ì¹´ë“œ
+			
+			if(gnum==6) {//6ëª…ì¼ ê²½ìš° ì˜¤í”ˆí•  ì¹´ë“œê°€ ì—†ìŒ
+				if(i==gnum-1) {
+					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[0]+"#"+
+							playerTurn[0]+"#"+"NULL"+"#"+turn.toString());
+				}else {
+					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
+							playerTurn[0]+"#"+"NULL"+"#"+turn.toString());
+				}
+			}
+			else {
+				StringBuilder open=new StringBuilder("#");
+				for(int j=0;j<cNum;j++) {
+					open.append(playerCard[gnum*3+j]);
+				}
+				if(i==gnum-1) {
+					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
+							playerTurn[0]+open+"#"+turn.toString());
+				}else {
+					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
+							playerTurn[0]+open+"#"+turn.toString());
+				}
+			}
+			m_serverStub.send(due, playerTurn[i]);
+			
+		}
+	
 	}
 	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		initGame initGame = new initGame();
-		initGame.answerCard();
-		initGame.distributeCard();
+		
 	}
 
 }
