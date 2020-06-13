@@ -314,7 +314,7 @@ public class ClueCMClient extends JFrame {
       //ArrayList<String> ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
       String[] list= {"1.ddeung                                    0.7","2.dding                                       0.2","3.ddong                                      0.1"};
       JList listPane=new JList(list);
-      listPane.setFont(new Font("Calibri", Font.BOLD, 17));
+      listPane.setFont(new Font("Calibri", Font.BOLD, 20));
       listPane.setAlignmentX(CENTER_ALIGNMENT);
       listPane.setBackground(Color.DARK_GRAY);
       listPane.setForeground(Color.white);
