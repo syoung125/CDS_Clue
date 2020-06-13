@@ -35,7 +35,9 @@ public class ClueCMClientGame extends JFrame {
    GameEnvironment env;
    
    CMUser myself;
+
    String userName = "";
+
    // 추리 관련 변수
    static Random random = new Random();
    public String beingPlace = "";
@@ -120,14 +122,16 @@ public class ClueCMClientGame extends JFrame {
    public ClueCMClientGame(CMClientStub clientStub) {
       // create a CM object and set the event handler
 //      m_clientStub = new CMClientStub();
+
       m_clientStub = clientStub;
 //      m_eventHandler = new ClueCMClientGameEventHandler(m_clientStub, this);
       env = new GameEnvironment();
       CMInteractionInfo interInfo = m_clientStub.getCMInfo().getInteractionInfo();
       myself = interInfo.getMyself();
       userName = myself.getName();
-       
-
+      
+            
+      // start CM
 //      startGame();
    }
    public void showDialog() {
@@ -135,16 +139,14 @@ public class ClueCMClientGame extends JFrame {
    }
    
    public void makeGameGUI() {
-      setTitle("CLUE");
+      setTitle("CLUE" + userName);
       setSize(800,600);
       
       gamebtnlistener=new BtnListener();
       gamekeylistener=new MyKeyListener();
       Container contentPane = getContentPane(); 
       contentPane.setLayout(new BorderLayout(0, 0));
-       setContentPane(contentPane);
-
-      
+      setContentPane(contentPane);
       JPanel pLeft = new JPanel(); 
       pLeft.setPreferredSize(new Dimension(400, 600));
       contentPane.add(pLeft, BorderLayout.WEST);
@@ -230,7 +232,6 @@ public class ClueCMClientGame extends JFrame {
    }
    
    public class BtnListener implements ActionListener{
-
       @Override
       public void actionPerformed(ActionEvent e) {
          // TODO Auto-generated method stub
@@ -462,9 +463,8 @@ public class ClueCMClientGame extends JFrame {
          printMessage("정답!^^\n");
          sendWinner();
       }else {
-         printMessage("증명해볼까요~?\n");
-//         _NextTurn();
-         findReason();
+         printMessage("틀림^^\n");
+         _NextTurn();
       }
      
       processState = pState.None;
@@ -540,7 +540,6 @@ public class ClueCMClientGame extends JFrame {
          case 1:
             returnReason(resultCard, received[4]);
             castGroup(userName + "님이 일치하는 카드를 가지고 있습니다.");
-            _NextTurn();
             break;
        case 2:
             m_clientStub.send(due, env.nextTurn);
@@ -594,6 +593,19 @@ public class ClueCMClientGame extends JFrame {
          env.printInitGame();
          printTurnMenu(env.currentTurn);
 
+//         setDisable(findBtn(env.PLACE_ARR[0]));
+//         setDisable(findBtn(env.CHARACTER_ARR[3]));
+         
+         
+         // obj -> string으로 (서버에서 전송할때)
+//         JSONObject obj = new JSONObject();
+//
+//            obj.put("name", "foo");
+//            obj.put("num", 100);
+//            obj.put("balance", 1000.21);
+//            obj.put("is_vip", true);
+//
+//            printMessage(obj.toString());
       }
    }
    
@@ -612,7 +624,6 @@ public class ClueCMClientGame extends JFrame {
       try {
          doc.insertString(doc.getLength(), strText, null);
          m_outTextPane.setCaretPosition(m_outTextPane.getDocument().getLength());
-
       } catch (BadLocationException e) {
          // TODO Auto-generated catch block
          e.printStackTrace();
@@ -650,13 +661,6 @@ public class ClueCMClientGame extends JFrame {
          printMessage(currentTurn+"님의 차례입니다.\n");
       }
       
-   }
-
-   public static void main(String[] args) {
-
-//      ClueCMClientGame gameFrameMain = new ClueCMClientGame();
-      
-   
    }
 
 }

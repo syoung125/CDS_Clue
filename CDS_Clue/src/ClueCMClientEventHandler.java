@@ -10,8 +10,9 @@ import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 
 public class ClueCMClientEventHandler implements CMAppEventHandler {
+
 	 private CMClientStub m_clientStub;
-	   private ClueCMClient m_client;
+	 private ClueCMClient m_client;
 	//   private ClueCMClientGame m_game;
 	   
 	   
@@ -48,6 +49,7 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 	         break;
 	      }
 	   }
+
 
 	   private void processDummyEvent(CMEvent cme) {
 	      CMDummyEvent due = (CMDummyEvent) cme;
@@ -101,14 +103,16 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 	      }
 	      return;
 	   }
-	   private void processReplyEvent(String type) {
-	      switch(type) {
-	         case "registerUser":
-	            m_client.initUser(true);
-	            break;
 
-	      }
-	   }
+	private void processReplyEvent(String type) {
+		switch(type) {
+			case "registerUser":
+				m_client.initUser(true);
+				break;
+
+		}
+	}
+
 	   private void processSessionEvent(CMEvent cme) {
 	      // TODO Auto-generated method stub
 	      CMSessionEvent se = (CMSessionEvent)cme;

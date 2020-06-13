@@ -47,7 +47,6 @@ public class ClueCMClient extends JFrame {
    
    public ClueCMClient(){
       m_clientStub = new CMClientStub();
-      
       m_eventHandler = new ClueCMClientEventHandler(m_clientStub,this);
       m_bRun = true;
       
@@ -65,7 +64,6 @@ public class ClueCMClient extends JFrame {
    }
    
    public void makeLogin2() {
-        //UI변경 변경
        setTitle("게임 준비");
         setSize(500, 730);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
