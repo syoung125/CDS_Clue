@@ -79,6 +79,10 @@ public class ClueCMClient extends JFrame {
         showRankingBtn.setPreferredSize(new Dimension(150,60));
         showRankingBtn.addActionListener(login2btnlistener);
 
+        fastStartBtn.setBackground(Color.WHITE);
+        makeRoomBtn.setBackground(Color.WHITE);
+        showRankingBtn.setBackground(Color.WHITE);
+      
 		ImageIcon icon = new ImageIcon("img/CLUE.jpg"); //이미지 아이콘 객체 생성
 		Image im = icon.getImage(); //뽑아온 이미지 객체 사이즈를 새롭게 만들기!
 		Image im2 = im.getScaledInstance(500, 600, Image.SCALE_DEFAULT);
@@ -185,11 +189,9 @@ public class ClueCMClient extends JFrame {
           if(ret==null)
              return;
           int sessionNum=Integer.parseInt(ret)-2;
-          System.out.println("요거밝혀라"+sessionNum);
           if(1<=sessionNum&&sessionNum<5) {
              m_clientStub.joinSession("session"+sessionNum);
              m_clientStub.changeGroup("g1");
-             m_clientStub.requestSessionInfo();
             //대기
            // int alert=JOptionPane.showConfirmDialog(null, m_clientStub.getGroupMembers().toString()+"와 대기합니다.", "대기 중", JOptionPane.OK_OPTION);
             //*************비활성화 시켜주세욤*************
@@ -208,8 +210,6 @@ public class ClueCMClient extends JFrame {
       String strSessionName = null;
       String sessiontojoin=null;
       CMSessionEvent bRequestResult = null;
-      m_clientStub.requestServerInfo();
-      System.out.println("server info: "+m_clientStub.getServerAddress());
       System.out.println("<<<<<게임 인원 선택>>>>>");
       strSessionName = JOptionPane.showInputDialog("게임 인원을 입력하세요(3-6):");
       if(strSessionName != null)
@@ -238,18 +238,8 @@ public class ClueCMClient extends JFrame {
          else
             System.out.print("failed the session-join request!\n");
       }
-      //확인용
-      m_clientStub.requestSessionInfo();
-      /*
-      getGroupInfoInSession(sessiontojoin);
-      String strGroupName = JOptionPane.showInputDialog(sessiontojoin+"의 그룹 별 현재 인원\n g1:"+groupnum.get(0).toString()+" g2:"+groupnum.get(1).toString()+" g3:"+groupnum.get(2).toString()+" g4:"+groupnum.get(3));
-      groupnum.clear();
-      if(strGroupName != null) {
-         m_clientStub.changeGroup(strGroupName);
-         testPrintGroupMembers();
-      }*/
+   
       m_clientStub.changeGroup("g1");     //*****g1으로 시작
-      //getSessionGroupInfo();
       ClueCMClientGame play=new ClueCMClientGame();
    }
 
@@ -303,9 +293,10 @@ public class ClueCMClient extends JFrame {
   
    public void showRanking() {
       //getGroupInfoInSession("session1");
+	  System.out.println("url: "+m_clientStub.getCMInfo().getDBInfo().getDBURL());
 
       System.out.println("showRanking");
-       //랭킹 조회 페이지 생성 
+      //랭킹 조회 페이지 생성 
       //디비에서 유저 정보 가져오기
       //순서대로 나열하기(쿼리로)
       JFrame rankingFrame =new JFrame();
@@ -315,7 +306,6 @@ public class ClueCMClient extends JFrame {
       
       JTextField rankingText=new JTextField("RANKING");
       rankingText.setHorizontalAlignment(JTextField.CENTER);
-      System.out.println("url"+m_clientStub.getCMInfo().getDBInfo().getDBURL());
       ClueCMDBManager cluedbmanager=new ClueCMDBManager();
       
       ArrayList<String> ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
