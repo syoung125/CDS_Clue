@@ -121,6 +121,8 @@ public class initGame {
 		for(int i=0;i<gnum;i++) {
 			turn.append(playerTurn[i]);
 		}
+		String sTurn=turn.toString();
+		sTurn=sTurn.substring(0,sTurn.length()-1);
 		
 		for(int i=0;i<gnum;i++) {			
 			String str=card[playerCard[3*i]]+","+card[playerCard[3*i+1]]
@@ -129,23 +131,23 @@ public class initGame {
 			if(gnum==6) {//6명일 경우 오픈할 카드가 없음
 				if(i==gnum-1) {
 					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[0]+"#"+
-							playerTurn[0]+"#"+"NULL"+"#"+turn.toString());
+							playerTurn[0]+"#"+"NULL"+"#"+sTurn);
 				}else {
 					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
-							playerTurn[0]+"#"+"NULL"+"#"+turn.toString());
+							playerTurn[0]+"#"+"NULL"+"#"+sTurn);
 				}
 			}
 			else {
 				StringBuilder open=new StringBuilder("#");
 				for(int j=0;j<cNum;j++) {
-					open.append(playerCard[gnum*3+j]);
+					open.append(playerCard[gnum*3+j]+",");
 				}
 				if(i==gnum-1) {
 					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
-							playerTurn[0]+open+"#"+turn.toString());
+							playerTurn[0]+open+"#"+sTurn);
 				}else {
 					due.setDummyInfo(sb.toString()+"#"+str+"#"+playerTurn[i+1]+"#"+
-							playerTurn[0]+open+"#"+turn.toString());
+							playerTurn[0]+open+"#"+sTurn);
 				}
 			}
 			m_serverStub.send(due, playerTurn[i]);
