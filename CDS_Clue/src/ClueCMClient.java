@@ -38,10 +38,6 @@ public class ClueCMClient extends JFrame {
    private JButton makeRoomBtn;
    private JButton showRankingBtn;
    
-   private JButton session3Btn;
-   private JButton session4Btn;
-   private JButton session5Btn;
-   private JButton session6Btn;
    private Image icon;
    
    private BtnListener login2btnlistener;
@@ -69,9 +65,9 @@ public class ClueCMClient extends JFrame {
 
 	  //icon=new ImageIcon(Main.class.getResource("/CDS_Clue/img/clue.jpg")).getImage();
 	   
-	   setTitle("게임 준비");
-       setSize(600,300);
-       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    setTitle("게임 준비");
+        setSize(600,300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new FlowLayout(FlowLayout.CENTER,40,50));
       
         login2btnlistener=new BtnListener();
@@ -89,8 +85,9 @@ public class ClueCMClient extends JFrame {
         add(makeRoomBtn);
         add(showRankingBtn);
         
+    
         setVisible(true);
-
+        
        
    }
   
@@ -138,8 +135,7 @@ public class ClueCMClient extends JFrame {
          if(session.getUserNum()==sessionNum-1) {           //여석 1. 나 추가 시 게임 바로 시작
             m_clientStub.syncJoinSession(session.getSessionName());
             m_clientStub.changeGroup("g1");					//**g1으로 로그인 
-            m_clientStub.requestSessionInfo();
-                
+              
             ClueCMClientGame play=new ClueCMClientGame();
 			return;
          }
@@ -183,12 +179,13 @@ public class ClueCMClient extends JFrame {
           if(ret==null)
              return;
           int sessionNum=Integer.parseInt(ret)-2;
-          if(3<=sessionNum&&sessionNum<7) {
+          System.out.println("요거밝혀라"+sessionNum);
+          if(1<=sessionNum&&sessionNum<5) {
              m_clientStub.joinSession("session"+sessionNum);
              m_clientStub.changeGroup("g1");
-            m_clientStub.requestSessionInfo();
+             m_clientStub.requestSessionInfo();
             //대기
-            System.out.println("waiting for people");
+           // int alert=JOptionPane.showConfirmDialog(null, m_clientStub.getGroupMembers().toString()+"와 대기합니다.", "대기 중", JOptionPane.OK_OPTION);
             //*************비활성화 시켜주세욤*************
             ClueCMClientGame play=new ClueCMClientGame();
              return;
@@ -196,6 +193,9 @@ public class ClueCMClient extends JFrame {
       
       return;      
 
+   }
+   public void startGame() {
+       ClueCMClientGame play=new ClueCMClientGame();
    }
    public void makeRoom() {
          
@@ -309,13 +309,13 @@ public class ClueCMClient extends JFrame {
       
       JTextField rankingText=new JTextField("RANKING");
       rankingText.setHorizontalAlignment(JTextField.CENTER);
-      
+      System.out.println("url"+m_clientStub.getCMInfo().getDBInfo().getDBURL());
       ClueCMDBManager cluedbmanager=new ClueCMDBManager();
       
-      String[] ret=cluedbmanager.queryForRanking(m_clientStub.getCMInfo());
+      ArrayList<String> ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
       JList listPane=null;
       if(ret!=null) {
-         listPane=new JList(ret);
+         listPane=new JList();
         listPane.setAlignmentX(CENTER_ALIGNMENT);;
       }
      
@@ -372,23 +372,13 @@ public class ClueCMClient extends JFrame {
          System.err.println("CM initialization error!");
          return;
       }
-      /*
-      bRet =initUser(false);
-      if(!bRet) {
-         System.err.println("CM init(login or signup) user error!");
-         return;
-      }*/
+
       System.out.println("startCM");
    
    
       boolean chk=initUser(false);
      
 
-      //testSyncLoginDS();
-      //frame.setM_clientStub(m_clientStub);
-      //frame.getM_clientStub().setAppEventHandler(m_eventHandler);
-      //frame.getM_clientStub().setAppEventHandler(frame.getM_eventHandler());
-      //frame.getM_clientStub().startCM();
          
       if(chk) makeLogin2();
       else {
@@ -475,8 +465,8 @@ public class ClueCMClient extends JFrame {
             VALUES ('ddeung', sha1("12345"));
           5. select로 확인
             select *from user_table;
-
          */
+	      System.out.println("안녕하세요:::"+m_clientStub.getCMInfo().getDBInfo().getDBURL());
 
       
       boolean bRequestResult = false;
