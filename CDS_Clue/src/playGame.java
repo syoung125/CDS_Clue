@@ -7,12 +7,15 @@ import kr.ac.konkuk.ccslab.cm.entity.*;
 
 public class playGame {
 	
-	
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public playGame() {
 		initGame init = new initGame();
 		playGame play = new playGame();
 	}
+
+//	public static void main(String[] args) {
+//		// TODO Auto-generated method stub
+//		initGame init = new initGame();
+//		playGame play = new playGame();
+//	}
 
 }

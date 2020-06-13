@@ -54,7 +54,6 @@ public class ClueCMClientGame extends JFrame {
 	public void makeGameGUI() {
 		setTitle("CLUE");
 		setSize(800,600);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
 		gamebtnlistener=new BtnListener();
 		gamekeylistener=new MyKeyListener();

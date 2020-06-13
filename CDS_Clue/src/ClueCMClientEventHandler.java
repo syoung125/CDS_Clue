@@ -1,9 +1,14 @@
+import java.util.Iterator;
+
 import com.mysql.fabric.xmlrpc.Client;
 
+import kr.ac.konkuk.ccslab.cm.entity.CMSessionInfo;
 import kr.ac.konkuk.ccslab.cm.event.CMDummyEvent;
 import kr.ac.konkuk.ccslab.cm.event.CMEvent;
+import kr.ac.konkuk.ccslab.cm.event.CMSessionEvent;
 import kr.ac.konkuk.ccslab.cm.event.handler.CMAppEventHandler;
 import kr.ac.konkuk.ccslab.cm.info.CMInfo;
+import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 
 public class ClueCMClientEventHandler implements CMAppEventHandler {
@@ -22,6 +27,10 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		case CMInfo.CM_DUMMY_EVENT:
 			processDummyEvent(cme);
 			break;
+		case CMInfo.CM_SESSION_EVENT:
+			processSessionEvent(cme);
+		case CMInfo.CM_LOGIN:
+			System.out.println("login login login");
 		default:
 			break;
 		}
@@ -46,6 +55,51 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 			case "registerUser":
 				m_client.initUser(true);
 				break;
+		}
+	}
+	private void processSessionEvent(CMEvent cme) {
+		// TODO Auto-generated method stub
+		CMSessionEvent se = (CMSessionEvent)cme;
+		switch(se.getID())
+		{
+			case CMSessionEvent.LOGIN_ACK:
+				if(se.isValidUser() == 0)
+				{
+					System.out.println("This client fails authentication by the default server!\n");
+				}
+				else if(se.isValidUser() == -1)
+				{
+					System.out.println("This client is already in the login-user list!\n");
+				}
+				else
+				{
+					System.out.println("This client successfully logs in to the default server.\n");
+					CMInteractionInfo interInfo = m_clientStub.getCMInfo().getInteractionInfo();
+					
+					// Change the title of the client window
+					m_client.setTitle("CM Client ["+interInfo.getMyself().getName()+"]");
+	
+				}
+				break;
+		     case CMSessionEvent.RESPONSE_SESSION_INFO:
+		 		 	 processRESPONSE_SESSION_INFO(se);
+			break;
+		}
+	}
+
+	private void processRESPONSE_SESSION_INFO(CMSessionEvent se)
+	{
+		Iterator<CMSessionInfo> iter = se.getSessionInfoList().iterator();
+
+		printMessage(String.format("%-60s%n", "------------------------------------------------------------"));
+		printMessage(String.format("%-20s%-20s%-10s%-10s%n", "name", "address", "port", "user num"));
+		printMessage(String.format("%-60s%n", "------------------------------------------------------------"));
+
+		while(iter.hasNext())
+		{
+			CMSessionInfo tInfo = iter.next();
+			printMessage(String.format("%-20s%-20s%-10d%-10d%n", tInfo.getSessionName(), tInfo.getAddress(), 
+					tInfo.getPort(), tInfo.getUserNum()));
 		}
 	}
 	private void printMessage(String strText) {
