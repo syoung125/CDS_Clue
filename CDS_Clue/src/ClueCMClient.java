@@ -63,19 +63,17 @@ public class ClueCMClient extends JFrame {
 		infoDialog = new JDialog();
 		JLabel label = new JLabel();
 		label.setText(str);
+		label.setFont(new Font(label.getName(), Font.BOLD, 20));
 		infoDialog.setLocation(500,400);
 		infoDialog.setLayout(new BorderLayout());
 		infoDialog.setTitle("please wait...");
-		label.setFont(new Font(label.getName(), Font.BOLD, 15));
 		infoDialog.setSize(300, 200);
 		infoDialog.add(label,BorderLayout.CENTER);
 		infoDialog.setVisible(true);
-		System.out.println(label.getText());
 	}
 	public void disappearInfoDialog() {
 		System.out.println("disappearInfoDialog");
 		if(infoDialog!=null) {
-			System.out.println("visible false");
 			infoDialog.setVisible(false);
 			infoDialog = null;
 		}
@@ -128,7 +126,8 @@ public class ClueCMClient extends JFrame {
 			} else if (button.getText().equals("방 만들기")) {
 				makeRoom();
 			} else if (button.getText().equals("랭킹 조회")) {
-				showRanking();
+				showInfoDialog("랭킹 정보를 조회합니다...");
+				sendDummyEvent("ranking","");
 			}
 
 		}
@@ -302,15 +301,13 @@ public class ClueCMClient extends JFrame {
 		// 서버 내 세션 마다 그룹 정보 조회
 
 	}
-
-	public void showRanking() {
+	
+	public void showRanking(String[] list) {
 		// getGroupInfoInSession("session1");
 		// System.out.println("url: "+m_clientStub.getCMInfo().getDBInfo().getDBURL());
 
 		System.out.println("showRanking");
-		// 랭킹 조회 페이지 생성
-		// 디비에서 유저 정보 가져오기
-		// 순서대로 나열하기(쿼리로)
+		
 		JFrame rankingFrame = new JFrame();
 		rankingFrame.setTitle("랭킹 조회");
 		rankingFrame.setSize(500, 730);
@@ -320,20 +317,13 @@ public class ClueCMClient extends JFrame {
 		rankingText.setFont(new Font("Calibri", Font.BOLD, 25));
 		rankingText.setFocusable(false);
 		rankingText.setHorizontalAlignment(JTextField.CENTER);
-
-		ClueCMDBManager cluedbmanager = new ClueCMDBManager();
-
-		// ArrayList<String>
-		// ret=cluedbmanager.queryGetUsersList(m_clientStub.getCMInfo());
-		String[] list = { "1.ddeung                                    0.7",
-				"2.dding                                       0.2",
-				"3.ddong                                      0.1" };
+		
 		JList listPane = new JList(list);
 		listPane.setFont(new Font("Calibri", Font.BOLD, 20));
 		listPane.setAlignmentX(CENTER_ALIGNMENT);
 		listPane.setBackground(Color.DARK_GRAY);
 		listPane.setForeground(Color.white);
-
+		
 		JPanel panel = new JPanel();
 		panel.setAlignmentX(CENTER_ALIGNMENT);
 		panel.setSize(500, 200);
@@ -474,15 +464,9 @@ public class ClueCMClient extends JFrame {
 				} else {
 					System.out.println("failed the login request!\n");
 				}
-				
-				//로그인중입니다 다이얼로그 띄우기
-				
-				
 			} else {
 				showInfoDialog("회원가입 진행중입니다...");
 				m_clientStub.registerUser(strUserName, strPassword);
-				
-				//회웍나입중입니다 다이얼로그 -> inituser(true)
 			}
 		}
 		else if (option == JOptionPane.CANCEL_OPTION || option == 0){
@@ -491,29 +475,14 @@ public class ClueCMClient extends JFrame {
 		return bRequestResult;
 	}
 
-	public Boolean registerUser(String strName, String strPasswd) {
-		CMInteractionInfo interInfo = m_clientStub.getCMInfo().getInteractionInfo();
-		int nState = -1;
-		String strEncPasswd = null;
-		nState = m_clientStub.getMyself().getState();
-		if (nState == CMInfo.CM_INIT) {
-			System.out.println("CMClientStub.registerUser(), client is not connected to " + "the default server!");
-			return false;
-		}
-		// encrypt password
-		strEncPasswd = CMUtil.getSHA1Hash(strPasswd);
-		if (CMInfo._CM_DEBUG)
-			System.out.println("CMClientStub.registerUser(), user(" + strName + ") requested.");
 
+	public void sendDummyEvent(String type, String msg) {
+		System.out.println("send dummy event");
 		CMDummyEvent due = new CMDummyEvent();
-		System.out.println(m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress());
-		String host = m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress();
-		due.setDummyInfo("registerUser#" + strName + "#" + strEncPasswd + "#" + host);
-		m_clientStub.send(due, "SERVER"); //
-		System.out.println("getSender: " + due.getSender());
-		System.out.println("send message: " + due.getDummyInfo()); // 서버로 전송한 CMDummyEvent의 내용 출력
-		System.out.println("======\n");
-		return true;
+		due.setSender(m_clientStub.getCMInfo().getInteractionInfo().getMyself().getName());
+		due.setDummyInfo(type+"#"+msg);
+		m_clientStub.send(due, "SERVER");
+		System.out.println(due.getDummyInfo());
 	}
 	public void terminateCM() {
 		m_clientStub.terminateCM();
