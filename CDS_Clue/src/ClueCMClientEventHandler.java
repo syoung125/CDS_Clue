@@ -1,5 +1,7 @@
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
+
 import kr.ac.konkuk.ccslab.cm.entity.CMSessionInfo;
 import kr.ac.konkuk.ccslab.cm.event.CMDummyEvent;
 import kr.ac.konkuk.ccslab.cm.event.CMEvent;
@@ -42,8 +44,6 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 			break;
 		case CMInfo.CM_SESSION_EVENT:
 			processSessionEvent(cme);
-		case CMInfo.CM_LOGIN:
-			System.out.println("login login login");
 		default:
 			break;
 		}
@@ -58,7 +58,6 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		switch (type) {
 		case "reply":
 			printMessage(arrMsg[1] + " result: " + arrMsg[2]);
-			processReplyEvent(arrMsg[1]);
 			break;
 		case DummyType.GameStart:
 			System.out.println("GameStart: ");
@@ -102,14 +101,6 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		return;
 	}
 
-	private void processReplyEvent(String type) {
-		switch (type) {
-		case "registerUser":
-			m_client.initUser(true);
-			break;
-
-		}
-	}
 
 	private void processSessionEvent(CMEvent cme) {
 		// TODO Auto-generated method stub
@@ -118,20 +109,30 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		case CMSessionEvent.LOGIN_ACK:
 			if (se.isValidUser() == 0) {
 				System.out.println("This client fails authentication by the default server!\n");
+				m_client.disappearInfoDialog();
+				JOptionPane.showMessageDialog(null, "등록되지 않은 사용자입니다.", "로그인 실패", JOptionPane.ERROR_MESSAGE);
+				m_client.terminateCM(); //종료
 			} else if (se.isValidUser() == -1) {
 				System.out.println("This client is already in the login-user list!\n");
 			} else {
 				System.out.println("This client successfully logs in to the default server.\n");
-				CMInteractionInfo interInfo = m_clientStub.getCMInfo().getInteractionInfo();
-
-				// Change the title of the client window
-				m_client.setTitle("CM Client [" + interInfo.getMyself().getName() + "]");
-
+				m_client.disappearInfoDialog();
+				m_client.makeLogin2();
 			}
 			break;
 		case CMSessionEvent.RESPONSE_SESSION_INFO:
 			processRESPONSE_SESSION_INFO(se);
 			break;
+		case CMSessionEvent.REGISTER_USER_ACK:
+			if(se.getReturnCode()==1) { //등록 성공
+				m_client.disappearInfoDialog();
+				m_client.initUser();
+			}
+			else { //실패
+				m_client.disappearInfoDialog();
+				JOptionPane.showMessageDialog(null, "중복되는 id입니다.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
+				m_client.terminateCM(); //종료
+			}
 		}
 	}
 

@@ -25,7 +25,6 @@ import kr.ac.konkuk.ccslab.cm.info.CMInfo;
 import kr.ac.konkuk.ccslab.cm.info.CMInteractionInfo;
 import kr.ac.konkuk.ccslab.cm.stub.CMClientStub;
 import kr.ac.konkuk.ccslab.cm.util.CMUtil;
-
 //import sun.applet.Main;
 public class ClueCMClient extends JFrame {
 
@@ -33,8 +32,6 @@ public class ClueCMClient extends JFrame {
 	private CMClientStub m_clientStub;
 	private ClueCMClientEventHandler m_eventHandler;
 	private boolean m_bRun;
-	private Scanner m_scan = null;
-
 	private JButton fastStartBtn;
 	private JButton makeRoomBtn;
 	private JButton showRankingBtn;
@@ -43,16 +40,16 @@ public class ClueCMClient extends JFrame {
 
 	private BtnListener login2btnlistener;
 	private ArrayList groupnum = null;
-
 	ClueCMClientGame play;
 
+	//로그인 관련
+	private JDialog infoDialog;
+	
 	public ClueCMClient() {
+		
 		m_clientStub = new CMClientStub();
 		m_eventHandler = new ClueCMClientEventHandler(m_clientStub, this);
 		m_bRun = true;
-
-		// testStartCM();
-
 	}
 
 	public CMClientStub getClientStub() {
@@ -62,7 +59,27 @@ public class ClueCMClient extends JFrame {
 	public ClueCMClientEventHandler getClientEventHandler() {
 		return m_eventHandler;
 	}
-
+	public void showInfoDialog(String str) {
+		infoDialog = new JDialog();
+		JLabel label = new JLabel();
+		label.setText(str);
+		infoDialog.setLocation(500,400);
+		infoDialog.setLayout(new BorderLayout());
+		infoDialog.setTitle("please wait...");
+		label.setFont(new Font(label.getName(), Font.BOLD, 15));
+		infoDialog.setSize(300, 200);
+		infoDialog.add(label,BorderLayout.CENTER);
+		infoDialog.setVisible(true);
+		System.out.println(label.getText());
+	}
+	public void disappearInfoDialog() {
+		System.out.println("disappearInfoDialog");
+		if(infoDialog!=null) {
+			System.out.println("visible false");
+			infoDialog.setVisible(false);
+			infoDialog = null;
+		}
+	}
 	public void makeLogin2() {
 		setTitle("게임 준비");
 		setSize(500, 730);
@@ -170,6 +187,8 @@ public class ClueCMClient extends JFrame {
 		}
 		if (count == 4) {
 			Object[] message = { "현재 바로 시작할 수 있는 게임 방이 없습니다. 방을 직접 만들고 대기하세요." };
+			JOptionPane a = new JOptionPane();
+		
 			int option = JOptionPane.showConfirmDialog(null, message, "게임 시작 불가", JOptionPane.OK_OPTION,
 					JOptionPane.CANCEL_OPTION);
 			if (option == JOptionPane.OK_OPTION) {
@@ -347,28 +366,9 @@ public class ClueCMClient extends JFrame {
 		nCurServerPort = m_clientStub.getServerPort();
 
 		// ask the user if he/she would like to change the server info
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("========== start CM");
 		System.out.println("current server address: " + strCurServerAddress);
 		System.out.println("current server port: " + nCurServerPort);
-
-		try {
-			System.out.print("new server address (enter for current value): ");
-			strNewServerAddress = br.readLine().trim();
-			System.out.print("new server port (enter for current value): ");
-			strNewServerPort = br.readLine().trim();
-
-			// update the server info if the user would like to do
-			if (!strNewServerAddress.isEmpty() && !strNewServerAddress.equals(strCurServerAddress))
-				m_clientStub.setServerAddress(strNewServerAddress);
-			if (!strNewServerPort.isEmpty() && Integer.parseInt(strNewServerPort) != nCurServerPort)
-				m_clientStub.setServerPort(Integer.parseInt(strNewServerPort));
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		boolean bRet = m_clientStub.startCM();
 		if (!bRet) {
 			System.err.println("CM initialization error!");
@@ -377,65 +377,64 @@ public class ClueCMClient extends JFrame {
 
 		System.out.println("startCM");
 
-		boolean chk = initUser(false);
+		boolean chk = initUser();
 
-		if (chk)
-			makeLogin2();
-		else {
-			initUser(false);
-		}
-		// 로그인에 성공한 이후니까, 방선택하기 코드가 들어갈 자리입니다.
-		play = new ClueCMClientGame(m_clientStub);
-		// startTest();
+//		if (chk)
+//			makeLogin2();
+//		else {
+//			initUser(false);
+//		}
+//		// 로그인에 성공한 이후니까, 방선택하기 코드가 들어갈 자리입니다.
+//		play = new ClueCMClientGame(m_clientStub);
 	}
 
-	public void startTest() {
-		System.out.println("client application starts.");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		m_scan = new Scanner(System.in);
-		String strInput = null;
-		int nCommand = -1;
-		while (m_bRun) {
-			System.out.println("Type \"0\" for menu.");
-			System.out.print("> ");
-			try {
-				strInput = br.readLine();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				continue;
-			}
+//	public void startTest() {
+//		System.out.println("client application starts.");
+//		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//		m_scan = new Scanner(System.in);
+//		String strInput = null;
+//		int nCommand = -1;
+//		while (m_bRun) {
+//			System.out.println("Type \"0\" for menu.");
+//			System.out.print("> ");
+//			try {
+//				strInput = br.readLine();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				continue;
+//			}
+//
+//			try {
+//				nCommand = Integer.parseInt(strInput);
+//			} catch (NumberFormatException e) {
+//				System.out.println("Incorrect command number!");
+//				continue;
+//			}
+//
+//			switch (nCommand) {
+//			case 0:
+//				// printAllMenus();
+//				break;
+//			case 1:
+//				// testDummyEvent();
+//				break;
+//			default:
+//				System.err.println("Unknown command.");
+//				break;
+//			}
+//		}
+//
+//		try {
+//			br.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		m_scan.close();
+//	}
 
-			try {
-				nCommand = Integer.parseInt(strInput);
-			} catch (NumberFormatException e) {
-				System.out.println("Incorrect command number!");
-				continue;
-			}
-
-			switch (nCommand) {
-			case 0:
-				// printAllMenus();
-				break;
-			case 1:
-				// testDummyEvent();
-				break;
-			default:
-				System.err.println("Unknown command.");
-				break;
-			}
-		}
-
-		try {
-			br.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		m_scan.close();
-	}
-
-	public Boolean initUser(Boolean isOnlyLogin) {
+	public Boolean initUser() {
 		/*
 		 * 로그인을 테스트하기 위해서는 1. server conf. login scheme , dbscheme 을 1로 만든당 2. server
 		 * conf에서 db정보를 자신의 로컬 디비 환경과 맞춘다(이 부분은 추후에 데스크톱에 서버를 돌리게 되면 고정아이피로 누구나 접속할 수
@@ -447,7 +446,6 @@ public class ClueCMClient extends JFrame {
 		 * insert 테스트 INSERT INTO user_table(userName,password) VALUES ('ddeung',
 		 * sha1("12345")); 5. select로 확인 select *from user_table;
 		 */
-		System.out.println("안녕하세요:::" + m_clientStub.getCMInfo().getDBInfo().getDBURL());
 
 		boolean bRequestResult = false;
 
@@ -461,44 +459,35 @@ public class ClueCMClient extends JFrame {
 		JRadioButton signUpButton = new JRadioButton("signUp");
 		group.add(loginButton);
 		group.add(signUpButton);
-		if (isOnlyLogin) {
-			signUpButton.setEnabled(false);
-			;
-		}
 		Object[] message = { "User Name:", userNameField, "Password:", passwordField, loginButton, signUpButton };
-
+		
 		int option = JOptionPane.showConfirmDialog(null, message, "Login Input", JOptionPane.OK_CANCEL_OPTION);
 		if (option == JOptionPane.OK_OPTION) {
 			strUserName = userNameField.getText();
 			strPassword = new String(passwordField.getPassword()); // security problem?
 			System.out.println(strUserName + " " + strPassword);
 			if (loginButton.isSelected()) {
-				bRequestResult = m_clientStub.loginCM(strUserName, strPassword); // 만약 등록안된 사용자라면 false 리턴함
+				showInfoDialog("로그인 진행중입니다...");
+				bRequestResult = m_clientStub.loginCM(strUserName, strPassword); //
 				if (bRequestResult) {
 					System.out.println("successfully sent the login request.\n");
 				} else {
 					System.out.println("failed the login request!\n");
 				}
+				
+				//로그인중입니다 다이얼로그 띄우기
+				
+				
 			} else {
-				// m_clientStub.registerUser(strUserName, strPassword); //이미 존재하는 아이디라면
-				// CMInteractionManager에서 걸러줌! -> 이거 server event thread 에서 캐치하는데 default로 처리해주는
-				// 함수랑 우리 db구조랑 안맞아서 dummyevent로 재정의함
+				showInfoDialog("회원가입 진행중입니다...");
 				m_clientStub.registerUser(strUserName, strPassword);
-				// bRequestResult = registerUser(strUserName, strPassword);
-				// if(bRequestResult)
-				// {
-				// Object[] message2 = {"please wait until register your info...."};
-				// JOptionPane.showMessageDialog(null, message2);
-				// System.out.println("successfully sent the register request.\n");
-				// }
-				// else
-				// {
-				// System.out.println("failed the register request!\n");
-				// }
+				
+				//회웍나입중입니다 다이얼로그 -> inituser(true)
 			}
-
 		}
-
+		else if (option == JOptionPane.CANCEL_OPTION || option == 0){
+			terminateCM();
+		}
 		return bRequestResult;
 	}
 
@@ -526,15 +515,18 @@ public class ClueCMClient extends JFrame {
 		System.out.println("======\n");
 		return true;
 	}
+	public void terminateCM() {
+		m_clientStub.terminateCM();
+		System.exit(0);
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		ClueCMClient client = new ClueCMClient();
 		CMClientStub cmStub = client.getClientStub();
 		cmStub.setAppEventHandler(client.getClientEventHandler());
-		// cmStub.loginCM("user1", "1234");
 		client.testStartCM();
-		System.out.println("Client application is terminated.");
+		System.out.println("끝");
 	}
 
 }
