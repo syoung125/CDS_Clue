@@ -26,6 +26,7 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		public static final String CastGroup = "CastGroup";
 		public static final String Target = "Target";
 		public static final String TargetReturn = "TargetReturn";
+		public static final String Ranking = "rankingInfo";
 	}
 
 	public ClueCMClientEventHandler(CMClientStub stub, ClueCMClient client) {
@@ -97,10 +98,26 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		case DummyType.TargetReturn:
 			m_client.play.openCardToSb(arrMsg[1]);
 			break;
+		case DummyType.Ranking:
+			setRankingInfo(arrMsg);
+			
 		}
 		return;
 	}
-
+	private void setRankingInfo(String[] arrMsg) {
+		String[] list = new String[arrMsg.length-1]; //0번쨰는 type이니까
+		if(arrMsg.length == 2) {
+			list[0] = arrMsg[1]; //there is no user
+		}
+		else {
+			for(int i = 1; i<arrMsg.length;i++) {
+				list[i-1] = i+"    "+arrMsg[i];
+				System.out.println(list[i-1]);
+			}	
+		}
+		m_client.disappearInfoDialog();
+		m_client.showRanking(list);
+	}
 
 	private void processSessionEvent(CMEvent cme) {
 		// TODO Auto-generated method stub

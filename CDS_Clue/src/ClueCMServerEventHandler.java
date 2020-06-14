@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import kr.ac.konkuk.ccslab.cm.entity.CMMember;
@@ -131,48 +132,63 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 		String[] arrMsg = msg.split("#");
 		String type = arrMsg[0];
 		switch (type) {
-			case "registerUser":
-				registerUser(arrMsg[3],arrMsg[1],arrMsg[2]);
-				break;
 			case "startGame":
-				startGame(arrMsg[1],arrMsg[2],m_serverStub);
+				startGame(arrMsg[1],arrMsg[2]);
 				break;
+			case "ranking":
+				getRanking(due.getSender());
 
 		}
 		
 		return;
 	}
-	private void startGame(String session,String group,CMServerStub cs) {
+	private void startGame(String session,String group) {
 		initGame initGame = new initGame();
 		initGame.answerCard();
 		initGame.distributeCard();
 		System.out.println(session+group);
-		initGame.playersTurn(session,group,cs);
-		initGame.registerCard(session,group,cs);
+		initGame.playersTurn(session,group,m_serverStub);
+		initGame.registerCard(session,group,m_serverStub);
 	}
-	
-	private void registerUser(String sender,String strName, String strEncPasswd) {
-		Boolean ret = false;
+	private void getRanking(String sender) {
+		ArrayList<String> list = ClueCMDBManager.queryGetRanking(m_serverStub.getCMInfo());
+		System.out.println("list.size(): "+list.size());
 		CMDummyEvent due= new CMDummyEvent();
-		
-		ret = ClueCMDBManager.queryAlreadyUser(strName,m_serverStub.getCMInfo()) == -1 ? true : false; //-1: 湲곗〈 �븘�씠�뵒�뿉 �뾾�쓬, 1;湲곗〈 id�뿉 �엳�쓬
-		if(ret) {
-			String str = ClueCMDBManager.queryInsertUser(strName,strEncPasswd,m_serverStub.getCMInfo()) == -1 ? "false" : "true";
-			due.setDummyInfo("reply#registerUser#"+str);
+		String info = "rankingInfo#";
+		if(list.isEmpty()) {
+			info+="there is no user";
 		}
 		else {
-			//해당 아이디 존재
-			due.setDummyInfo("reply#registerUser#false");
-			
+			for(String str: list) {
+				info+=str+"#";
+			}
 		}
-		
-		
-		//�빐寃룻빐�빞�븯�뒗 臾몄젣 -> login group �뿉 �뱾�뼱媛��엳吏� �븡�쑝硫� unicast媛� �븞�맖 ! �떆�룄�빐蹂� �빐寃� 諛⑸쾿: login �떎�뙣�븯�뒗 寃껋쿂�읆 �씪�떒 user�뿉 �꽔怨�, send �븯怨� 鍮쇰뒗 諛⑸쾿 
-		
-		m_serverStub.send(due,sender); 
-		System.out.println("send message: "+due.getDummyInfo()); //�겢�씪�씠�뼵�듃濡� �쟾�넚�븳 CMDummyEvent�쓽 �궡�슜 異쒕젰
-		System.out.println("======\n");
+		due.setDummyInfo(info);
+		m_serverStub.send(due, sender);
+		System.out.println(due.getDummyInfo());
 	}
+//	private void registerUser(String sender,String strName, String strEncPasswd) {
+//		Boolean ret = false;
+//		CMDummyEvent due= new CMDummyEvent();
+//		
+//		ret = ClueCMDBManager.queryAlreadyUser(strName,m_serverStub.getCMInfo()) == -1 ? true : false; //-1: 湲곗〈 �븘�씠�뵒�뿉 �뾾�쓬, 1;湲곗〈 id�뿉 �엳�쓬
+//		if(ret) {
+//			String str = ClueCMDBManager.queryInsertUser(strName,strEncPasswd,m_serverStub.getCMInfo()) == -1 ? "false" : "true";
+//			due.setDummyInfo("reply#registerUser#"+str);
+//		}
+//		else {
+//			//해당 아이디 존재
+//			due.setDummyInfo("reply#registerUser#false");
+//			
+//		}
+//		
+//		
+//		//�빐寃룻빐�빞�븯�뒗 臾몄젣 -> login group �뿉 �뱾�뼱媛��엳吏� �븡�쑝硫� unicast媛� �븞�맖 ! �떆�룄�빐蹂� �빐寃� 諛⑸쾿: login �떎�뙣�븯�뒗 寃껋쿂�읆 �씪�떒 user�뿉 �꽔怨�, send �븯怨� 鍮쇰뒗 諛⑸쾿 
+//		
+//		m_serverStub.send(due,sender); 
+//		System.out.println("send message: "+due.getDummyInfo()); //�겢�씪�씠�뼵�듃濡� �쟾�넚�븳 CMDummyEvent�쓽 �궡�슜 異쒕젰
+//		System.out.println("======\n");
+//	}
 
 	private void printMessage(String strText) {
 		/*
