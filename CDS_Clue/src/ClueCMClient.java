@@ -160,11 +160,13 @@ public class ClueCMClient extends JFrame {
 		CMSessionEvent chk = m_clientStub.syncRequestSessionInfo();
 		Iterator<CMSessionInfo> k = chk.getSessionInfoList().iterator();
 		String messagestr = "";
+		int num=3;
 		while (k.hasNext()) {
 			CMSessionInfo kinfo = k.next();
-			messagestr += kinfo.getUserNum();
+			messagestr += (kinfo.getUserNum())%num;
 			if (kinfo.getUserNum() == 0)
 				count++;
+			num++;
 		}
 		if (count == 4) {
 			Object[] message = { "현재 바로 시작할 수 있는 게임 방이 없습니다. 방을 직접 만들고 대기하세요." };
