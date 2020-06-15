@@ -88,6 +88,9 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 			// System.out.println("["+se.getUserName()+"] requests to join
 			// session("+se.getSessionName()+").");
 			printMessage("[" + se.getUserName() + "] requests to join session(" + se.getSessionName() + ").\n");
+			CMDummyEvent dme=new CMDummyEvent();
+			dme.setDummyInfo("userNumInfo#"+se.getSessionName());
+			m_serverStub.send(dme, se.getSessionName());
 			break;
 		case CMSessionEvent.LEAVE_SESSION:
 			// System.out.println("["+se.getUserName()+"] leaves a
@@ -127,6 +130,7 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 		}
 	}
 
+	
 	private void processDummyEvent(CMEvent cme) {
 		CMDummyEvent due = (CMDummyEvent) cme;
 		System.out.println("session(" + due.getHandlerSession() + "), group(" + due.getHandlerGroup() + ")");
@@ -150,7 +154,8 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 					if(user.getName()!=arrMsg[2])
 						ms+=user.getName()+" ";
 				}
-				String inviteMember=JOptionPane.showInputDialog(null, "현재 접속 유저는 "+ms+"입니다. \n초대할 유저를"+arrMsg[3]+"명 입력하세요(이름1/이름2)","유저 초대", JOptionPane.PLAIN_MESSAGE);
+				System.out.println("현재 접속 유저는 "+ms+"입니다. \n초대할 유저를"+(Integer.parseInt(arrMsg[3])-1)+"명 입력하세요(이름1/이름2)");
+				String inviteMember=JOptionPane.showInputDialog(null, "현재 접속 유저는 "+ms+"입니다. \n초대할 유저를"+(Integer.parseInt(arrMsg[3])-1)+"명 입력하세요(이름1/이름2)","유저 초대", JOptionPane.PLAIN_MESSAGE);
 		        String[] inviteMems=inviteMember.split("/");
 		        int cnt=0;
 		        CMDummyEvent du = new CMDummyEvent();
@@ -162,6 +167,7 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 		        	cnt++;
 		        }
 				break;
+			
 
 		}
 		

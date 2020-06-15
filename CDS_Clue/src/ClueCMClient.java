@@ -153,7 +153,6 @@ public class ClueCMClient extends JFrame {
 		int num=3;
 		String messagestr = "";
 		while (iter.hasNext()) {
-			System.out.println("*********hey!!!!!!!!!************");
 			CMSessionInfo session = iter.next();
 			int sessionNum = session.getSessionName().charAt(7) - '0';
 			messagestr += (session.getUserNum())%num;

@@ -65,7 +65,6 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		case "invite":
 			int inviteRequest=JOptionPane.showConfirmDialog(null, arrMsg[1], "초대", JOptionPane.OK_OPTION,JOptionPane.CANCEL_OPTION);
 		    if(inviteRequest==0) {
-		    	System.out.println("okkk");
 		    	m_clientStub.joinSession(arrMsg[2]);
 		    	m_clientStub.changeGroup("g2");
 		    }
@@ -74,6 +73,16 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		    break;
 		case "reply":
 			printMessage(arrMsg[1] + " result: " + arrMsg[2]);
+			break;
+		case "userNumInfo":
+			int s=m_clientStub.getGroupMembers().getMemberNum();
+			if((arrMsg[1].charAt(7)-'0'+2)==s) 
+			{
+				CMDummyEvent duek = new CMDummyEvent();
+				duek.setDummyInfo("startGame#" + arrMsg[1] + "#g1");
+				m_clientStub.send(duek, "SERVER"); // notify the sever to start the game
+			}
+					
 			break;
 		case DummyType.GameStart:
 			System.out.println("GameStart: ");
@@ -155,11 +164,7 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		case CMSessionEvent.RESPONSE_SESSION_INFO:
 			processRESPONSE_SESSION_INFO(se);
 			break;
-		case CMSessionEvent.JOIN_SESSION:
-			System.out.println("sessionack");
-
-			processJoin_SESSION_ACK(se);
-			break;
+	
 		case CMSessionEvent.REGISTER_USER_ACK:
 			if(se.getReturnCode()==1) { //등록 성공
 				m_client.disappearInfoDialog();
@@ -174,23 +179,7 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		}
 	}
 
-	private void processJoin_SESSION_ACK(CMSessionEvent se) {
-			System.out.println("joinSession!!!"+m_clientStub.getGroupMembers().getMemberNum());
-
-		    Iterator<CMSessionInfo> iter = se.getSessionInfoList().iterator();
-		    while (iter.hasNext()) {
-				System.out.println("게임시작!!"+m_clientStub.getGroupMembers().getMemberNum());
-				JOptionPane.showConfirmDialog(null, " CLUE 게임을 시작합니다.");
-				CMSessionInfo tInfo = iter.next();
-				if((tInfo.getSessionName().charAt(7) - '0')==tInfo.getUserNum()){
-					CMDummyEvent due = new CMDummyEvent();
-					due.setDummyInfo("startGame#" + tInfo.getSessionName() + "#g1");
-					m_clientStub.send(due, "SERVER");
-				}
-				
-			}
-			
-	}
+	
 	private void processRESPONSE_SESSION_INFO(CMSessionEvent se) {
 		Iterator<CMSessionInfo> iter = se.getSessionInfoList().iterator();
 
