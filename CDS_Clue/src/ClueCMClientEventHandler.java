@@ -62,6 +62,16 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		String[] arrMsg = msg.split("#");
 		String type = arrMsg[0];
 		switch (type) {
+		case "invite":
+			int inviteRequest=JOptionPane.showConfirmDialog(null, arrMsg[1], "초대", JOptionPane.OK_OPTION,JOptionPane.CANCEL_OPTION);
+		    if(inviteRequest==0) {
+		    	System.out.println("okkk");
+		    	m_clientStub.joinSession(arrMsg[2]);
+		    	m_clientStub.changeGroup("g2");
+		    }
+		    else
+		    	System.out.println("refused");
+		    break;
 		case "reply":
 			printMessage(arrMsg[1] + " result: " + arrMsg[2]);
 			break;

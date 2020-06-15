@@ -1,6 +1,9 @@
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+
+import javax.swing.JOptionPane;
 
 import kr.ac.konkuk.ccslab.cm.entity.CMMember;
 import kr.ac.konkuk.ccslab.cm.entity.CMUser;
@@ -137,6 +140,28 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 				break;
 			case "ranking":
 				getRanking(due.getSender());
+				break;
+			case "invite":
+				String ms="";
+				CMUser user=null;
+				Iterator<CMUser> iter=m_serverStub.getLoginUsers().getAllMembers().iterator();
+				while(iter.hasNext()) {
+					user=iter.next();
+					if(user.getName()!=arrMsg[2])
+						ms+=user.getName()+" ";
+				}
+				String inviteMember=JOptionPane.showInputDialog(null, "현재 접속 유저는 "+ms+"입니다. \n초대할 유저를"+arrMsg[3]+"명 입력하세요(이름1/이름2)","유저 초대", JOptionPane.PLAIN_MESSAGE);
+		        String[] inviteMems=inviteMember.split("/");
+		        int cnt=0;
+		        CMDummyEvent du = new CMDummyEvent();
+				due.setSender(arrMsg[2]);
+				due.setDummyInfo("invite"+"#"+arrMsg[2]+"의 초대를 수락하시겠습니까?"+"#"+arrMsg[1]);
+		        while(cnt<inviteMems.length) {
+		        	
+		        	m_serverStub.send(due, inviteMems[cnt]);
+		        	cnt++;
+		        }
+				break;
 
 		}
 		

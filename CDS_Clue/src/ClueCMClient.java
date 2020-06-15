@@ -126,7 +126,7 @@ public class ClueCMClient extends JFrame {
 				fastStart();
 			} else if (button.getText().equals("방 만들기")) {
 				m_clientStub.syncRequestSessionInfo();
-				makeRoom();
+				makeRoom2();
 			} else if (button.getText().equals("랭킹 조회")) {
 				showInfoDialog("랭킹 정보를 조회합니다...");
 				sendDummyEvent("ranking","");
@@ -167,7 +167,6 @@ public class ClueCMClient extends JFrame {
 				due.setDummyInfo("startGame#" + session.getSessionName() + "#g1");
 				m_clientStub.send(due, "SERVER"); // notify the sever to start the game
 				
-				// ClueCMClientGame play=new ClueCMClientGame();
 				play.showDialog();
 				return;
 			} else if (session.getUserNum() == 0) {
@@ -228,6 +227,20 @@ public class ClueCMClient extends JFrame {
 
 	}
 
+	public void makeRoom2() {
+		
+		String strSessionName=JOptionPane.showInputDialog(null, "게임 인원을 입력하세요(3-6):","방 만들기", JOptionPane.PLAIN_MESSAGE);
+		CMDummyEvent due=new CMDummyEvent();
+		int sessionnum = strSessionName.charAt(0) - '0';//3-6
+		String sessiontojoin = "session" + Integer.toString(sessionnum - 2);
+		m_clientStub.joinSession(sessiontojoin);
+		m_clientStub.changeGroup("g2");
+        String myName=m_clientStub.getCMInfo().getInteractionInfo().getMyself().getName();
+
+		due.setDummyInfo("invite"+"#"+sessiontojoin+"#"+myName+"#"+sessionnum);
+		m_clientStub.send(due, "SERVER");
+		
+	}
 	public void makeRoom() {
 
 		String strSessionName = null;
@@ -236,7 +249,7 @@ public class ClueCMClient extends JFrame {
 		System.out.println("<<<<<게임 인원 선택>>>>>");
 		strSessionName = JOptionPane.showInputDialog("게임 인원을 입력하세요(3-6):");
 		if (strSessionName != null) {
-			int sessionnum = strSessionName.charAt(0) - '0';
+			int sessionnum = strSessionName.charAt(0) - '0';//3-6
 			sessiontojoin = "session" + Integer.toString(sessionnum - 2);
 
 			CMInteractionInfo interInfo = m_clientStub.getCMInfo().getInteractionInfo();
@@ -245,15 +258,19 @@ public class ClueCMClient extends JFrame {
 			if (myself.getState() != CMInfo.CM_SESSION_JOIN) {
 				// 어떤 세션에도 가입 x
 				bRequestResult = m_clientStub.syncJoinSession(sessiontojoin);
+				m_clientStub.changeGroup("g1");//빠른시작 유입인원
 			} else {
 				// 이미 가입한 세션 존재
 				m_clientStub.leaveSession();
 				bRequestResult = m_clientStub.syncJoinSession(sessiontojoin);
+				m_clientStub.changeGroup("g2");//기존에 없는 방 생성 -> 초대 -> 유입 
+
 
 			}
 
-			if (bRequestResult != null)
-				System.out.print("successfully sent the session-join request.\n");
+			if (bRequestResult != null) {
+				System.out.print("successfully sent the session-join request.\n");	
+			}
 			else
 				System.out.print("failed the session-join request!\n");
 		}
