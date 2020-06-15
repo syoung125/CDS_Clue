@@ -132,7 +132,7 @@ public class ClueCMClientGame extends JFrame {
 		userName = myself.getName();
 
 		// start CM
-		// startGame();
+		//startGame();
 	}
 
 	public void showDialog() {

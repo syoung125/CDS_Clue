@@ -79,6 +79,7 @@ public class ClueCMClient extends JFrame {
 		}
 	}
 	public void makeLogin2() {
+		play = new ClueCMClientGame(m_clientStub);
 		setTitle("게임 준비");
 		setSize(500, 730);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -124,6 +125,7 @@ public class ClueCMClient extends JFrame {
 			if (button.getText().equals("빠른 시작")) {
 				fastStart();
 			} else if (button.getText().equals("방 만들기")) {
+				m_clientStub.syncRequestSessionInfo();
 				makeRoom();
 			} else if (button.getText().equals("랭킹 조회")) {
 				showInfoDialog("랭킹 정보를 조회합니다...");
@@ -138,53 +140,59 @@ public class ClueCMClient extends JFrame {
 
 		System.out.println("fastStart");
 		// 현재 활성화된 세션을 조사 (세션 별로 활성화된 그룹 수 띄우기)
-
 		// 세션과 그룹에 등록 후
 		// getSessionGroupInfo();
-		CMInteractionInfo interInfo = m_clientStub.getCMInfo().getInteractionInfo();
-		CMUser myself = interInfo.getMyself();
+		CMInteractionInfo intInfo = m_clientStub.getCMInfo().getInteractionInfo();
+		CMUser myself = intInfo.getMyself();
 
-		Iterator<CMSession> iter = interInfo.getSessionList().iterator();
+		CMSessionEvent interInfo = m_clientStub.syncRequestSessionInfo();
+		//**interInfo->sessionEvent
+		Iterator<CMSessionInfo> iter = interInfo.getSessionInfoList().iterator();
 		String temp = "session1";
 		int count = 0;
-
-		String[] restRoom = {};
+		int num=3;
+		String messagestr = "";
 		while (iter.hasNext()) {
-			CMSession session = iter.next();
+			System.out.println("*********hey!!!!!!!!!************");
+			CMSessionInfo session = iter.next();
 			int sessionNum = session.getSessionName().charAt(7) - '0';
-			System.out.println("sessionNum:" + sessionNum);
-			if (session.getUserNum() == sessionNum - 1) { // 여석 1. 나 추가 시 게임 바로 시작
+			messagestr += (session.getUserNum())%num;
+			
+			if (session.getUserNum() == sessionNum +1) { // 여석 1. 나 추가 시 게임 바로 시작
 				m_clientStub.syncJoinSession(session.getSessionName());
 				m_clientStub.changeGroup("g1"); // **g1으로 로그인
-
 				CMDummyEvent due = new CMDummyEvent();
 				System.out.println(m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress());
 				String host = m_clientStub.getCMInfo().getConfigurationInfo().getMyAddress();
 				due.setDummyInfo("startGame#" + session.getSessionName() + "#g1");
 				m_clientStub.send(due, "SERVER"); // notify the sever to start the game
+				
 				// ClueCMClientGame play=new ClueCMClientGame();
 				play.showDialog();
 				return;
 			} else if (session.getUserNum() == 0) {
 				temp = session.getSessionName();
-				count++;
+				//count++;
 			}
+			num++;
 
 		}
 		// 빠른 시작이 안 되는 경우
 
-		CMSessionEvent chk = m_clientStub.syncRequestSessionInfo();
-		Iterator<CMSessionInfo> k = chk.getSessionInfoList().iterator();
-		String messagestr = "";
-		int num=3;
-		while (k.hasNext()) {
-			CMSessionInfo kinfo = k.next();
-			messagestr += (kinfo.getUserNum())%num;
+		//CMSessionEvent chk = m_clientStub.syncRequestSessionInfo();
+		//Iterator<CMSessionInfo> k = chk.getSessionInfoList().iterator();
+		//**iter-->sessionEvent
+		iter = interInfo.getSessionInfoList().iterator();
+		//String messagestr = "";
+		//int num=3;
+		while (iter.hasNext()) {
+			CMSessionInfo kinfo = iter.next();
+			//messagestr += (kinfo.getUserNum())%num;
 			if (kinfo.getUserNum() == 0)
 				count++;
-			num++;
+			//num++;
 		}
-		if (count == 4) {
+		if (count == 4) { //모든 세션에 사용자가 없음.
 			Object[] message = { "현재 바로 시작할 수 있는 게임 방이 없습니다. 방을 직접 만들고 대기하세요." };
 			JOptionPane a = new JOptionPane();
 		
@@ -232,9 +240,8 @@ public class ClueCMClient extends JFrame {
 			sessiontojoin = "session" + Integer.toString(sessionnum - 2);
 
 			CMInteractionInfo interInfo = m_clientStub.getCMInfo().getInteractionInfo();
-			CMConfigurationInfo confInfo = m_clientStub.getCMInfo().getConfigurationInfo();
 			CMUser myself = interInfo.getMyself();
-
+			
 			if (myself.getState() != CMInfo.CM_SESSION_JOIN) {
 				// 어떤 세션에도 가입 x
 				bRequestResult = m_clientStub.syncJoinSession(sessiontojoin);
@@ -316,6 +323,7 @@ public class ClueCMClient extends JFrame {
 		JTextField rankingText = new JTextField("RANKING");
 		rankingText.setFont(new Font("Calibri", Font.BOLD, 25));
 		rankingText.setFocusable(false);
+		rankingText.setSize(500,170);
 		rankingText.setHorizontalAlignment(JTextField.CENTER);
 		
 		JList listPane = new JList(list);
@@ -457,7 +465,7 @@ public class ClueCMClient extends JFrame {
 			strPassword = new String(passwordField.getPassword()); // security problem?
 			System.out.println(strUserName + " " + strPassword);
 			if (loginButton.isSelected()) {
-				showInfoDialog("로그인 진행중입니다...");
+				showInfoDialog("  로그인 진행중입니다...");
 				bRequestResult = m_clientStub.loginCM(strUserName, strPassword); //
 				if (bRequestResult) {
 					System.out.println("successfully sent the login request.\n");

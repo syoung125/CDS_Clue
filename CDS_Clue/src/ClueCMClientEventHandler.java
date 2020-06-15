@@ -2,7 +2,11 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
+import kr.ac.konkuk.ccslab.cm.entity.CMGroup;
+import kr.ac.konkuk.ccslab.cm.entity.CMGroupInfo;
+import kr.ac.konkuk.ccslab.cm.entity.CMMember;
 import kr.ac.konkuk.ccslab.cm.entity.CMSessionInfo;
+import kr.ac.konkuk.ccslab.cm.entity.CMUser;
 import kr.ac.konkuk.ccslab.cm.event.CMDummyEvent;
 import kr.ac.konkuk.ccslab.cm.event.CMEvent;
 import kr.ac.konkuk.ccslab.cm.event.CMSessionEvent;
@@ -45,6 +49,7 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 			break;
 		case CMInfo.CM_SESSION_EVENT:
 			processSessionEvent(cme);
+		
 		default:
 			break;
 		}
@@ -140,6 +145,11 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		case CMSessionEvent.RESPONSE_SESSION_INFO:
 			processRESPONSE_SESSION_INFO(se);
 			break;
+		case CMSessionEvent.JOIN_SESSION:
+			System.out.println("sessionack");
+
+			processJoin_SESSION_ACK(se);
+			break;
 		case CMSessionEvent.REGISTER_USER_ACK:
 			if(se.getReturnCode()==1) { //등록 성공
 				m_client.disappearInfoDialog();
@@ -150,9 +160,27 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 				JOptionPane.showMessageDialog(null, "중복되는 id입니다.", "회원가입 실패", JOptionPane.ERROR_MESSAGE);
 				m_client.terminateCM(); //종료
 			}
+			break;
 		}
 	}
 
+	private void processJoin_SESSION_ACK(CMSessionEvent se) {
+			System.out.println("joinSession!!!"+m_clientStub.getGroupMembers().getMemberNum());
+
+		    Iterator<CMSessionInfo> iter = se.getSessionInfoList().iterator();
+		    while (iter.hasNext()) {
+				System.out.println("게임시작!!"+m_clientStub.getGroupMembers().getMemberNum());
+				JOptionPane.showConfirmDialog(null, " CLUE 게임을 시작합니다.");
+				CMSessionInfo tInfo = iter.next();
+				if((tInfo.getSessionName().charAt(7) - '0')==tInfo.getUserNum()){
+					CMDummyEvent due = new CMDummyEvent();
+					due.setDummyInfo("startGame#" + tInfo.getSessionName() + "#g1");
+					m_clientStub.send(due, "SERVER");
+				}
+				
+			}
+			
+	}
 	private void processRESPONSE_SESSION_INFO(CMSessionEvent se) {
 		Iterator<CMSessionInfo> iter = se.getSessionInfoList().iterator();
 
