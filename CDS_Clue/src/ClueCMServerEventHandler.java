@@ -83,6 +83,7 @@ public class ClueCMServerEventHandler implements CMAppEventHandler {
 			// System.out.println("["+se.getUserName()+"] changes to
 			// session("+se.getSessionName()+").");
 			printMessage("[" + se.getUserName() + "] changes to session(" + se.getSessionName() + ").\n");
+			
 			break;
 		case CMSessionEvent.JOIN_SESSION:
 			// System.out.println("["+se.getUserName()+"] requests to join

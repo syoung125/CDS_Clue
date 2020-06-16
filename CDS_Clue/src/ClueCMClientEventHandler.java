@@ -64,19 +64,22 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 		switch (type) {
 		case "invite":
 			int inviteRequest=JOptionPane.showConfirmDialog(null, arrMsg[1], "초대", JOptionPane.OK_OPTION,JOptionPane.CANCEL_OPTION);
-		    if(inviteRequest==0) {
+		    CMSessionEvent chk=m_clientStub.syncRequestSessionInfo();
+			if(chk!=null&&inviteRequest==0) {
+		    	
 		    	m_clientStub.joinSession(arrMsg[2]);
 		    	m_clientStub.changeGroup("g2");
+		    	System.out.println("successtoMakeNewGroup");
 		    }
 		    else
-		    	System.out.println("refused");
+		    	System.out.println("failtomakeNewGroup");
 		    break;
 		case "reply":
 			printMessage(arrMsg[1] + " result: " + arrMsg[2]);
 			break;
 		case "userNumInfo":
 			int s=m_clientStub.getGroupMembers().getMemberNum();
-			if((arrMsg[1].charAt(7)-'0'+2)==s) 
+			if((arrMsg[1].charAt(7)-'0')==s) 
 			{
 				CMDummyEvent duek = new CMDummyEvent();
 				duek.setDummyInfo("startGame#" + arrMsg[1] + "#g1");
