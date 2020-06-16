@@ -2,6 +2,6 @@
 Collaborative Distribution System
 
 # 시연영상
-[![Watch the video](https://youtu.be/ueLYXU-w4bg](https://youtu.be/ueLYXU-w4bg)
+https://youtu.be/ueLYXU-w4bg
 
 
