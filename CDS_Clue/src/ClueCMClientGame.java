@@ -101,20 +101,17 @@ public class ClueCMClientGame extends JFrame {
 
 		// function for testing initGame
 		public void printInitGame() {
-			printMessage("\n");
-			printMessage("---------initGame---------------\n");
-			printMessage("Character: " + answer[0]);
-			printMessage("\n");
-			printMessage("Weapon: " + answer[1]);
-			printMessage("\n");
-			printMessage("Place: " + answer[2]);
-			printMessage("\n");
-			printMessage("MyCard: " + myCard[0] + ", " + myCard[1] + ", " + myCard[2]);
-			printMessage("\n");
-			printMessage("nextTurn: " + nextTurn);
-			printMessage("\n");
-			printMessage("--------------------------------\n");
+			String str = "\n"
+					+"---------initGame---------------\n"
+					+"Character: " + answer[0] +"\n"
+					+"Weapon: " + answer[1]+"\n"
+					+"Place: " + answer[2] +"\n"
+					+"MyCard: " + myCard[0] + ", " + myCard[1] + ", " + myCard[2]+"\n"
+					+"nextTurn: " + nextTurn+"\n"
+					+"--------------------------------\n";
 
+//			printMessage(str);
+			System.out.println(str);
 		}
 	}
 
@@ -480,10 +477,10 @@ public class ClueCMClientGame extends JFrame {
 
 		if (env.guess[0].equals(env.answer[0]) && env.guess[1].equals(env.answer[1])
 				&& env.guess[2].equals(env.answer[2])) {
-			printMessage("정답!^^\n");
+			printMessage("축하합니다! 추리에 성공하셨습니다~!\n");
 			sendWinner();
 		} else {
-			printMessage("틀림^^\n");
+			printMessage("아쉽지만 정답이 아니에요ㅠㅠ\n");
 			// _NextTurn();
 			findReason();
 		}
@@ -598,7 +595,7 @@ public class ClueCMClientGame extends JFrame {
 		// env.initEnv(answer, myCard, nextTurn, currentTurn, openCard, playerTurn);
 		if (env.bStart) {
 			printMessage("===== Game Start =====\n");
-			env.printInitGame();
+//			env.printInitGame();
 			printTurnMenu(env.currentTurn);
 		}
 	}

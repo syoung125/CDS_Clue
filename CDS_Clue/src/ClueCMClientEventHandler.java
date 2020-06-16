@@ -106,6 +106,7 @@ public class ClueCMClientEventHandler implements CMAppEventHandler {
 			System.out.println(arrMsg[6]);
 			m_client.play.env.initEnv(answer, myCard, nextTurn, currentTurn, openCard, playerTurn);
 			m_client.play.startGame();
+			m_client.play.env.printInitGame();
 			break;
 		case DummyType.SetTurn:
 			m_client.play.setCurrentTurn(arrMsg[1]);
