@@ -2,5 +2,6 @@
 Collaborative Distribution System
 
 # 시연영상
-<iframe width="640" height="360" src="https://youtu.be/ueLYXU-w4bg" frameborder="0" gesture="media" allowfullscreen=""></iframe>
+[![Watch the video](https://youtu.be/ueLYXU-w4bg](https://youtu.be/ueLYXU-w4bg)
+
 
