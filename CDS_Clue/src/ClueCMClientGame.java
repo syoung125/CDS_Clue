@@ -40,7 +40,7 @@ public class ClueCMClientGame extends JFrame {
 
 	// 추리 관련 변수
 	static Random random = new Random();
-	public String beingPlace = "";
+	public String beingPlace = "LIVINGROOM";
 
 	enum pState {
 		None, ChooseMenu, Guessing, cardQone, cardQtwo, cardQthree
@@ -368,32 +368,32 @@ public class ClueCMClientGame extends JFrame {
 	}
 
 	public void cardQone() {
-		printMessage("[물음표카드 1 - 원하는 장소로 가서 추리!!]\n");
-		printMessage("장소를 입력하세요: \n");
+		castGroup("\n[물음표카드 1 - 원하는 장소로 가서 추리!!]\n");
+		castGroup(userName + "님  장소를 입력하세요: \n");
 		processState = pState.cardQone;
 	}
 
 	// open an another player's card to everyone 한 명 지목해서 단서카드 모두에게 오픈시키기
 	public void cardQtwo() {
-		printMessage("[물음표카드 2 - 원하는 플레이어의 카드를 한장 볼 수 있습니다!!]\n");
-		printMessage("플레이어를 입력하세요: \n");
+		castGroup("\n[물음표카드 2 - 원하는 플레이어의 카드를 한장 볼 수 있습니다!!]\n");
+		castGroup(userName + "님 플레이어를 입력하세요: \n");
 		processState = pState.cardQtwo;
 	}
 
 	public void cardQthree() {
-		printMessage("[물음표카드 3 - 원하는 플레이어의 카드를 한장 모두에게 오픈합니다!!]\n");
-		printMessage("플레이어를 입력하세요: \n");
+		castGroup("\n[물음표카드 3 - 원하는 플레이어의 카드를 한장 모두에게 오픈합니다!!]\n");
+		castGroup(userName + "님 플레이어를 입력하세요: \n");
 		processState = pState.cardQthree;
 	}
 
 	public void cardQfour() {
-		printMessage("[물음표카드 4 - 지금 방에서 한 번 더 추리!!]\n");
-		printMessage(beingPlace + "에서 추리를 시작하세요(형식: 사람, 무기): \n");
+		castGroup("\n[물음표카드 4 - 지금 방에서 한 번 더 추리!!]\n");
+		castGroup(userName + "님 " + beingPlace + "에서 추리를 시작하세요(형식: 사람, 무기): \n");
 		processState = pState.Guessing;
 	}
 
 	public void cardQfive() {
-		printMessage("[물음표카드 5 - 꽝 다음차례로 넘어갑니다!!]\n");
+		printMessage("\n[물음표카드 5 - ㅜㅜ꽝 다음차례로 넘어갑니다!!]\n");
 		_NextTurn();
 		processState = pState.None;
 	}
@@ -467,7 +467,9 @@ public class ClueCMClientGame extends JFrame {
 
 	// 파싱해서 정답 맞나 보기
 	public void checkGuess(String _guess) {
-		printMessage("*** " + userName + "의 추리 : " + _guess + "\n");
+		castGroup("\n====================================\n"
+				+ userName + "님의 추리 : " + _guess 
+				+ "\n====================================\n\n");
 
 		// check my answer
 		String[] guess = _guess.split(",");
@@ -511,7 +513,7 @@ public class ClueCMClientGame extends JFrame {
 		CMDummyEvent due = new CMDummyEvent();
 		due.setDummyInfo(userName);
 		m_clientStub.send(due, "SERVER");
-		castGroup(userName + "님이 추리에 성공하셨습니다!!");
+		castGroup("\n" + userName + "님이 추리에 성공하셨습니다!!\n");
 	}
 
 	public void findReason() {
@@ -572,7 +574,8 @@ public class ClueCMClientGame extends JFrame {
 		if (received[1].equals("NULL")) {
 			castGroup("아무도 증명하지 못했습니다.\n");
 		} else {
-			castGroup(received[1] + "카드를" + received[2] + "(이)가 가지고 있습니다.\n");
+			castGroup(received[2] + "님이 답이 아님을 증명하였습니다.\n");
+			printMessage(received[1] + "카드를" + received[2] + "(이)가 가지고 있습니다.\n");
 			setDisable(findBtn(received[1]));
 		}
 		_NextTurn();
@@ -594,19 +597,22 @@ public class ClueCMClientGame extends JFrame {
 		// {"player1","player4","player3","player2","player3","player2"};
 		// env.initEnv(answer, myCard, nextTurn, currentTurn, openCard, playerTurn);
 		if (env.bStart) {
-			printMessage("===== Game Start =====\n");
+			printMessage("======= Game Start =======\n");
+			printMessage("모든 플레이어는 "+ beingPlace + "에서 추리를 시작합니다.\n");
 //			env.printInitGame();
 			printTurnMenu(env.currentTurn);
 		}
 	}
 
 	public void printMenus() {
-		printMessage("\n");
-		printMessage("===============================\n");
-		printMessage("1. 물음표 카드 뽑기\n");
-		printMessage("2. 랜덤으로 추리할 방 부여받기\n");
-		printMessage("===============================\n");
-		printMessage(userName + "님 메뉴를 입력하세요 : \n");
+		String str = "\n"
+				+ "===============================\n"
+				+ "1. 물음표 카드 뽑기\n"
+				+ "2. 랜덤으로 추리할 방 부여받기\n"
+				+ "===============================\n"
+				+ userName + "님 메뉴를 입력하세요 : \n";
+
+		printMessage(str);
 	}
 
 	public void printMessage(String strText) {
@@ -649,7 +655,7 @@ public class ClueCMClientGame extends JFrame {
 			printMenus();
 			processState = pState.ChooseMenu;
 		} else {
-			printMessage(currentTurn + "님의 차례입니다.\n");
+			printMessage("> "+currentTurn + "님의 차례입니다.\n");
 		}
 
 	}
